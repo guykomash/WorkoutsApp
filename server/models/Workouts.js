@@ -11,7 +11,7 @@ const Workouts = [
   },
   {
     id: '2',
-    title: 'Advance Workout',
+    title: 'Advanced Workout',
     user: 'Nadav Komash',
     lastUpdated: '04/09/2023',
     exercises: [

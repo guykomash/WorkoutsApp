@@ -13,6 +13,9 @@ import {
   Container,
 } from '@mui/material';
 
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 const Workouts = () => {
   axios.defaults.withCredentials = true;
   const baseURL = 'http://localhost:3080';
@@ -26,6 +29,21 @@ const Workouts = () => {
       .catch((error) => console.error(error));
   };
 
+  const deleteWorkout = (workoutId) => {
+    axios
+      .post(`${baseURL}/workouts/delete-${workoutId}`)
+      .then((res) => console.log(res.data.Workouts))
+      .catch((error) => console.error(error));
+  };
+
+  // const deleteTest = () => {
+  //   console.log('delete test');
+  //   axios
+  //     .delete(`${baseURL}/workouts`)
+  //     .then()
+  //     .catch((error) => console.log(error));
+  // };
+
   useEffect(() => {
     getWorkouts();
   }, []);
@@ -34,108 +52,118 @@ const Workouts = () => {
     navigate(`/workouts/${workoutId}`);
   };
 
-  const renderExercises = (exercises) => {
-    console.log(typeof exercises);
-    // return (
-    //   <Card>
-    //     <CardContent sx={{ backgroundColor: 'gold' }}>
-    //       {exercises.map((exercise) => {
-    //         return (
-    //           <Typography
-    //             key={exercise.title}
-    //           >{`${exercise.title} sets:${exercise.sets} reps:${exercise.reps}`}</Typography>
-    //         );
-    //       })}
-    //     </CardContent>
-    //   </Card>
-    // );
+  const onAddWorkoutsBtn = () => {
+    navigate('/workouts/add-workout');
   };
 
-  const renderWorkouts = () => {
-    if (workouts.length) {
-      const renderWorkouts = workouts.map((workout) => (
-        <Card key={workout.title}>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              {workout.title}
-            </Typography>
-
-            <Box>{`by ${workout.user}`}</Box>
-            <Box
-              sx={{ color: 'green' }}
-            >{`last update: ${workout.lastUpdated}`}</Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              mb={2}
-              data-testid={'workout-user'}
-            >
-              <Typography variant="p">
-                {renderExercises(workout.exercises)}
-              </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      ));
-      return renderWorkouts;
-    } else {
-      return (
-        <Card>
-          <CardContent>
-            <Typography variant="h5" component="h2">
-              no Workouts yet...
-            </Typography>
-          </CardContent>
-        </Card>
-      );
-    }
+  const onDeleteWorkoutBtn = (workoutId) => {
+    deleteWorkout(workoutId);
   };
 
-  const renderWorkouts2 = () => {
-    return (
-      <Container maxWidth="sm">
-        <br />
+  const postWorkout = (user, title, exercises) => {
+    axios
+      .post(
+        `${baseURL}/workouts/add-workout`,
+        {
+          workout: {
+            user: user,
+            title: title,
+            exercises: exercises,
+          },
+        },
+        {
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+        }
+      )
+      .then((res) => setWorkouts(res.data.Workouts))
+      .catch((err) => console.log(err));
+  };
+
+  //for testing.
+  const addStamWorkout = () => {
+    const stam = {
+      title: 'Stam Workout',
+      user: 'Nadav Komash',
+      lastUpdated: '04/09/2023',
+      exercises: [
+        { title: 'Bench Press', sets: '3', reps: '8' },
+        { title: 'Lat Pulldown', sets: '3', reps: '10' },
+        { title: 'Squat', sets: '5', reps: '20' },
+        { title: 'Lateral Rises', sets: '4', reps: '8' },
+      ],
+    };
+    postWorkout(stam.user, stam.title, stam.exercises);
+    navigate('/workouts');
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <br />
+      <Typography
+        variant="h4"
+        align="center"
+        gutterBottom
+        data-testid="bookListing-title"
+      >
+        Workouts
+      </Typography>
+
+      {workouts.length == 0 ? (
         <Typography
-          variant="h4"
+          variant="body1"
           align="center"
-          gutterBottom
-          data-testid="bookListing-title"
+          data-testid="Workouts-noWorkoutsAvailable"
         >
-          Workouts
+          No workouts available.
         </Typography>
-        {workouts.length == 0 ? (
-          <Typography
-            variant="body1"
-            align="center"
-            data-testid="Workouts-noWorkoutsAvailable"
-          >
-            No workouts available.
-          </Typography>
-        ) : (
-          <List data-testid={'Workouts-list'}>
-            {workouts.map((workout) => (
-              <ListItem key={workout.id} disablePadding>
-                <ListItemText
-                  primary={workout.title}
-                  secondary={workout.user}
-                  data-testid={`Workouts-workout-${workout.id}`}
-                />
-                <Button
-                  variant="outlined"
-                  onClick={() => onViewDetailsClicked(workout.id)}
-                  data-testid={`Workouts-viewDetailsBtn-${workout.id}`}
-                >
-                  View Details
-                </Button>
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </Container>
-    );
-  };
-
-  return renderWorkouts2();
+      ) : (
+        <List data-testid={'Workouts-list'}>
+          {workouts.map((workout) => (
+            <ListItem key={workout.id} disablePadding>
+              <ListItemText
+                primary={workout.title}
+                secondary={workout.user}
+                data-testid={`Workouts-workout-${workout.id}`}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => onViewDetailsClicked(workout.id)}
+                data-testid={`Workouts-viewDetailsBtn-${workout.id}`}
+              >
+                View Details
+              </Button>
+              <Button
+                color="error"
+                onClick={() => onDeleteWorkoutBtn(workout.id)}
+              >
+                <DeleteIcon></DeleteIcon>
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      )}
+      <Button onClick={() => addStamWorkout()}>Add stam workouts</Button>
+      <Button
+        style={{ minWidth: '100%' }}
+        variant="outlined"
+        color="primary"
+        sx={{
+          color: 'green',
+          '&:hover': {
+            backgroundColor: 'green',
+            color: 'white',
+          },
+        }}
+        onClick={onAddWorkoutsBtn}
+        data-testid="filters-WorkoutsBtn"
+      >
+        <AddIcon label="add" />
+        Add Workout
+      </Button>
+    </Container>
+  );
 };
 
 export default Workouts;

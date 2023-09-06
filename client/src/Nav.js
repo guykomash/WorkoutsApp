@@ -15,8 +15,8 @@ import FitnessIcon from '@mui/icons-material/FitnessCenter';
 
 const pages = [
   { name: 'Home', path: '/' },
+  { name: 'New Session', path: '/sessions/new-session' },
   { name: 'Workouts', path: '/workouts' },
-  { name: 'Add Workout', path: '/add-workout' },
   { name: 'Timer', path: '/timer' },
 ];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];

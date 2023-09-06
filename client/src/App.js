@@ -8,6 +8,7 @@ import AddWorkout from './AddWorkout';
 import PageNotFound from './PageNotFound';
 import Timer from './Timer';
 import WorkoutDetails from './WorkoutDetails';
+import NewSession from './NewSession';
 
 const App = () => {
   return (
@@ -18,10 +19,10 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
+          <Route path="/workouts/add-workout" element={<AddWorkout />} />
+          <Route path="/sessions/new-session" element={<NewSession />} />
 
-          <Route path="/add-workout" element={<AddWorkout />} />
           <Route path="/timer" element={<Timer />} />
-
           <Route path="/*" element={<PageNotFound />} />
         </Routes>
       </Router>

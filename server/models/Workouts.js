@@ -1,26 +1,64 @@
-const Workouts = [
-  {
-    id: '1',
-    title: 'Basic Workout',
-    user: 'Guy Komash',
-    lastUpdated: '04/09/2023',
-    exercises: [
-      { title: 'Bench Press', sets: '3', reps: '8' },
-      { title: 'Lat Pulldown', sets: '3', reps: '10' },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Advanced Workout',
-    user: 'Nadav Komash',
-    lastUpdated: '04/09/2023',
-    exercises: [
-      { title: 'Bench Press', sets: '3', reps: '8' },
-      { title: 'Lat Pulldown', sets: '3', reps: '10' },
-      { title: 'Squat', sets: '5', reps: '20' },
-      { title: 'Lateral Rises', sets: '4', reps: '8' },
-    ],
-  },
-];
+const { getDB } = require('../database/mongoDB');
 
-module.exports = { Workouts };
+const saveWorkout = (workout, cb) => {
+  const db = getDB();
+  return db
+    .collection('workouts')
+    .insertOne(workout)
+    .then(() => fetchAllWorkouts(cb))
+    .catch((err) => console.error(err));
+};
+
+const fetchAllWorkouts = (cb) => {
+  const db = getDB();
+  db.collection('workouts')
+    .find()
+    .toArray()
+    .then((workouts) => {
+      cb(workouts);
+    })
+    .catch((err) => console.error(err));
+};
+
+const fetchSingleWorkout = (workoutId, cb) => {
+  const db = getDB();
+  db.collection('workouts')
+    .find({ id: workoutId })
+    .next()
+    .then((workout) => {
+      cb(workout);
+    })
+    .catch((err) => console.error(err));
+};
+
+const removeWorkoutandFetchAll = (workoutId, cb) => {
+  const db = getDB();
+  db.collection('workouts')
+    .deleteOne({ id: workoutId })
+    .then(() => fetchAllWorkouts(cb))
+    .catch((err) => console.error(err));
+};
+const updateWorkout = (workout, cb) => {
+  const db = getDB();
+  db.collection('workouts')
+    .updateOne(
+      { id: workout.id },
+      {
+        $set: {
+          title: workout.title,
+          user: workout.user,
+          lastUpdated: workout.lastUpdated,
+          exercises: workout.exercises,
+        },
+      }
+    )
+    .then(() => fetchAllWorkouts(cb))
+    .catch((e) => console.log(e));
+};
+module.exports = {
+  saveWorkout,
+  fetchAllWorkouts,
+  fetchSingleWorkout,
+  removeWorkoutandFetchAll,
+  updateWorkout,
+};

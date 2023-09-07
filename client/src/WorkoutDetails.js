@@ -21,7 +21,6 @@ import {
   TableBody,
   TableCell,
 } from '@mui/material';
-import { alignProperty } from '@mui/material/styles/cssUtils';
 
 const WorkoutDetails = () => {
   axios.defaults.withCredentials = true;

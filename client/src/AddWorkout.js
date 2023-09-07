@@ -40,14 +40,8 @@ const AddWorkout = () => {
     });
 
     if (isValid) {
-      console.log(`Submitted: {
-      name=${newUser},
-      title=${newTitle},
-      Exercises=
-      ${newExercises}
-    }`);
-
       const postExercises = newExercises.map((exercise) => ({
+        id: exercise.id,
         title: exercise.title,
         sets: exercise.sets,
         reps: exercise.reps,
@@ -107,13 +101,10 @@ const AddWorkout = () => {
   const handleAddExercise = () => {
     setNewExercises((prev) => [...prev, { id: JSON.stringify(eId + 1) }]);
     setEId(eId + 1);
-
-    console.log(newExercises);
   };
   const handleExerciseDelete = (id) => {
-    console.log('deletes');
     if (newExercises.length > 1) {
-      const nextExercises = newExercises.filter((e) => e.id != id);
+      const nextExercises = newExercises.filter((e) => e.id !== id);
       setNewExercises(nextExercises);
       console.log(nextExercises);
     }
@@ -126,15 +117,7 @@ const AddWorkout = () => {
           Add Workout
         </Typography>
         <TextField
-          label="Name"
-          fullWidth
-          margin="normal"
-          onChange={(event) => {
-            setNewUser(event.target.value);
-          }}
-        />
-        <TextField
-          label="Title"
+          label="Workout Title"
           fullWidth
           margin="normal"
           multiline
@@ -142,17 +125,27 @@ const AddWorkout = () => {
             setNewTitle(event.target.value);
           }}
         />
+        <TextField
+          label="Creator name"
+          fullWidth
+          margin="normal"
+          onChange={(event) => {
+            setNewUser(event.target.value);
+          }}
+        />
+
         <Grid>
           <br />
-          <Typography variant="h6" align="center" sx={{ color: 'blue' }}>
+          <Typography variant="h5" align="center">
             {`Exercises:`}
           </Typography>
           <br />
           {newExercises.map((exercise, index) => (
             <Grid key={exercise.id}>
-              <Typography variant="body" color={'blue'}>
-                {`Exercise ${index + 1}`}
-              </Typography>
+              <Typography
+                variant="body"
+                sx={{ fontSize: 18, fontStyle: 'italic' }}
+              >{`Exercise ${index + 1}`}</Typography>
               <Button
                 color="error"
                 onClick={() => handleExerciseDelete(exercise.id)}

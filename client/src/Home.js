@@ -7,7 +7,7 @@ const Home = () => {
       <Grid item xs={12}>
         <br />
         <Typography variant="h4" align="center" gutterBottom>
-          Home Page to Nogit
+          Home Page
         </Typography>
       </Grid>
     </Container>

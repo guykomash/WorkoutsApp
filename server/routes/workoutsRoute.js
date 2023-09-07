@@ -2,45 +2,45 @@ const express = require('express');
 const router = express.Router();
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { baseUrl, rootDir } = require('../../constants');
+const { baseUrl } = require('../../constants');
 const corsOptions = {
   origin: `${baseUrl.client}`,
   credentials: true,
 };
 router.use(cors());
 router.use(express.json());
-router.use(bodyParser.urlencoded());
-
-const { Workouts } = require('../models/Workouts');
+router.use(bodyParser.urlencoded({ extended: true }));
 
 const { v4: uuidv4 } = require('uuid');
 
-const fs = require('fs');
-const path = require('path');
-const workoutsDBPath = path.join(rootDir, 'database', 'workoutsDB.json');
+const { format } = require('date-fns');
 
-router.post('/delete-:workoutId', cors(corsOptions), (req, res) => {
-  console.log('delete');
+// import methods for local database
+// const { save, fetch, fetchAll, remove } = require('../database/localDB');
 
-  const { workoutId } = req.params;
-  console.log(workoutId);
-
-  deleteWorkoutFromFile(workoutId, (workouts) => {
-    res.send({ Workouts: workouts });
-  });
-});
+//mongoDB
+const {
+  saveWorkout,
+  fetchAllWorkouts,
+  fetchSingleWorkout,
+  removeWorkoutandFetchAll,
+  updateWorkout,
+} = require('../models/workouts');
 
 router.get('/', cors(corsOptions), (req, res) => {
-  fetchWorkoutsFromFile((workouts) => res.send({ Workouts: workouts }).end());
+  fetchAllWorkouts((workouts) => res.send({ Workouts: workouts }).end());
 });
 
 router.get('/:workoutId', cors(corsOptions), (req, res) => {
   const { workoutId } = req.params;
-  const workout = Workouts.find((workout) => workout.id === workoutId);
-  if (!workout) {
+
+  if (!workoutId) {
     return res.status(400).json({ message: 'workout not found' }).end();
   }
-  res.send({ workout });
+
+  fetchSingleWorkout(workoutId, (workout) => {
+    res.send({ workout }).end();
+  });
 });
 
 router.post('/add-workout', cors(corsOptions), (req, res) => {
@@ -55,65 +55,51 @@ router.post('/add-workout', cors(corsOptions), (req, res) => {
     id: uuidv4(),
     title: title,
     user: user,
-    lastUpdated: 'date from a date library',
+    lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
     exercises: exercises,
   };
 
-  // sWorkouts.push(newWorkout);
-
-  //add newWorkout to Database
-  saveWorkoutToFile(newWorkout, (workouts) => {
-    res.status(200).send({ Workouts: workouts });
+  saveWorkout(newWorkout, (workouts) => {
+    res.status(200).send({ Workouts: workouts }).end();
   });
 });
 
-const saveWorkoutToFile = (workout, cb) => {
-  console.log('Save');
-  let workouts = [];
-  fs.readFile(workoutsDBPath, (err, data) => {
-    if (err) throw err;
-    if (data.length) {
-      workouts = JSON.parse(data);
-    }
-    workouts.push(workout);
+router.post('/delete-:workoutId', cors(corsOptions), (req, res) => {
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    return res.status(400).json({ message: 'workout not found' }).end();
+  }
+  removeWorkoutandFetchAll(workoutId, (workouts) =>
+    res.send({ Workouts: workouts }).end()
+  );
+});
 
-    fs.writeFile(workoutsDBPath, JSON.stringify(workouts), (err) => {
-      if (err) throw err;
-    });
+router.get('/edit-:workoutId', cors(corsOptions), (req, res) => {
+  console.log('edit');
+  const { workoutId } = req.params;
+  if (!workoutId) {
+    return res.status(400).json({ message: 'workout not found' }).end();
+  }
 
-    cb(workouts);
+  fetchSingleWorkout(workoutId, (workout) => {
+    res.send({ workout }).end();
   });
-};
+});
 
-const fetchWorkoutsFromFile = (cb) => {
-  let workouts = [];
-  fs.readFile(workoutsDBPath, (err, data) => {
-    if (err) throw err;
-    if (data.length) {
-      workouts = JSON.parse(data);
-    }
-
-    cb(workouts);
-  });
-};
-
-const deleteWorkoutFromFile = (id, cb) => {
-  let workouts = [];
-  fs.readFile(workoutsDBPath, (err, data) => {
-    if (err) throw err;
-    if (data.length) {
-      workouts = JSON.parse(data);
-    }
-    workouts = workouts.filter((w) => w.id != id);
-    console.log(workouts);
-
-    fs.writeFile(workoutsDBPath, JSON.stringify(workouts), (err) => {
-      if (err) throw err;
-    });
-
-    cb(workouts);
-  });
-};
+router.post('/:workoutId', cors(corsOptions), (req, res) => {
+  const { workout } = req.body;
+  if (!workout)
+    return res.status(400).json({ message: 'workout not found' }).end();
+  const { id, title, user, exercises } = workout;
+  const updatedWorkout = {
+    id: id,
+    title: title,
+    user: user,
+    lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
+    exercises: exercises,
+  };
+  updateWorkout(updatedWorkout, () => res.end());
+});
 
 process.on('uncaughtException', (err) => {
   console.error(`uncaught error: ${err} `);

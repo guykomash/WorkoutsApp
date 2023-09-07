@@ -2,11 +2,15 @@ const express = require('express');
 const app = express();
 
 const workoutsRoutes = require('./routes/workoutsRoute');
-
 app.use('/workouts', workoutsRoutes);
 
-app.listen(3080, () => {
-  console.log('Server started...');
+const { mongoConnect } = require('./database/mongoDB');
+
+mongoConnect(() => {
+  console.log('Connected to MongoDB');
+  app.listen(3080, () => {
+    console.log('Server running on port 3080');
+  });
 });
 
 // const { baseUrl } = require('../constants');

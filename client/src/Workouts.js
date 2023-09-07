@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Card,
-  CardContent,
   Typography,
-  Box,
   List,
   ListItem,
   ListItemText,
@@ -15,6 +12,7 @@ import {
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 const Workouts = () => {
   axios.defaults.withCredentials = true;
@@ -26,7 +24,6 @@ const Workouts = () => {
     axios
       .get(`${baseURL}/workouts`)
       .then((res) => {
-        console.log(res.data.Workouts);
         setWorkouts(res.data.Workouts);
       })
       .catch((error) => console.error(error));
@@ -38,14 +35,6 @@ const Workouts = () => {
       .then((res) => setWorkouts(res.data.Workouts))
       .catch((error) => console.error(error));
   };
-
-  // const deleteTest = () => {
-  //   console.log('delete test');
-  //   axios
-  //     .delete(`${baseURL}/workouts`)
-  //     .then()
-  //     .catch((error) => console.log(error));
-  // };
 
   useEffect(() => {
     getWorkouts();
@@ -63,6 +52,10 @@ const Workouts = () => {
     deleteWorkout(workoutId);
   };
 
+  const onEditWorkoutBtn = (workoutId) => {
+    console.log('edit ' + workoutId);
+    navigate(`/workouts/edit/${workoutId}`);
+  };
   const postWorkout = (user, title, exercises) => {
     axios
       .post(
@@ -80,7 +73,10 @@ const Workouts = () => {
           },
         }
       )
-      .then((res) => setWorkouts(res.data.Workouts))
+      .then((res) => {
+        setWorkouts(res.data.Workouts);
+        navigate('/workouts');
+      })
       .catch((err) => console.log(err));
   };
 
@@ -91,14 +87,13 @@ const Workouts = () => {
       user: 'Nadav Komash',
       lastUpdated: '04/09/2023',
       exercises: [
-        { title: 'Bench Press', sets: '3', reps: '8' },
-        { title: 'Lat Pulldown', sets: '3', reps: '10' },
-        { title: 'Squat', sets: '5', reps: '20' },
-        { title: 'Lateral Rises', sets: '4', reps: '8' },
+        { id: '1', title: 'Bench Press', sets: '3', reps: '8' },
+        { id: '2', title: 'Lat Pulldown', sets: '3', reps: '10' },
+        { id: '3', title: 'Squat', sets: '5', reps: '20' },
+        { id: '4', title: 'Lateral Rises', sets: '4', reps: '8' },
       ],
     };
     postWorkout(stam.user, stam.title, stam.exercises);
-    navigate('/workouts');
   };
 
   return (
@@ -133,7 +128,6 @@ const Workouts = () => {
               <Button
                 variant="outlined"
                 onClick={() => onViewDetailsClicked(workout.id)}
-                data-testid={`Workouts-viewDetailsBtn-${workout.id}`}
               >
                 View Details
               </Button>
@@ -142,6 +136,9 @@ const Workouts = () => {
                 onClick={() => onDeleteWorkoutBtn(workout.id)}
               >
                 <DeleteIcon></DeleteIcon>
+              </Button>
+              <Button onClick={() => onEditWorkoutBtn(workout.id)}>
+                <EditIcon></EditIcon>
               </Button>
             </ListItem>
           ))}

@@ -23,6 +23,4 @@ const Workouts = [
   },
 ];
 
-
-
 module.exports = { Workouts };

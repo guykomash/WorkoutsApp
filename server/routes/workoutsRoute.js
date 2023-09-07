@@ -17,22 +17,21 @@ const { v4: uuidv4 } = require('uuid');
 
 const fs = require('fs');
 const path = require('path');
-const p = path.join(rootDir, 'database', 'workoutsDB.json');
+const workoutsDBPath = path.join(rootDir, 'database', 'workoutsDB.json');
 
 router.post('/delete-:workoutId', cors(corsOptions), (req, res) => {
+  console.log('delete');
+
   const { workoutId } = req.params;
-  console.log('s' + workoutId);
+  console.log(workoutId);
 
-  Workouts.map((workout) => {
-    if (workout.id != workoutId) return workout;
+  deleteWorkoutFromFile(workoutId, (workouts) => {
+    res.send({ Workouts: workouts });
   });
-
-  console.log(Workouts);
-  res.send({ Workouts });
 });
 
 router.get('/', cors(corsOptions), (req, res) => {
-  res.send({ Workouts });
+  fetchWorkoutsFromFile((workouts) => res.send({ Workouts: workouts }).end());
 });
 
 router.get('/:workoutId', cors(corsOptions), (req, res) => {
@@ -47,7 +46,7 @@ router.get('/:workoutId', cors(corsOptions), (req, res) => {
 router.post('/add-workout', cors(corsOptions), (req, res) => {
   const { workout } = req.body;
   if (!workout) {
-    res.status(400).json({ message: 'bad addWorkout request' }).end();
+    res.status(400).json({ message: 'bad add Workout request' }).end();
   }
 
   const { title, user, exercises } = workout;
@@ -60,35 +59,65 @@ router.post('/add-workout', cors(corsOptions), (req, res) => {
     exercises: exercises,
   };
 
-  Workouts.push(newWorkout);
+  // sWorkouts.push(newWorkout);
 
   //add newWorkout to Database
-  saveWorkoutToFile(newWorkout);
-
-  res.status(200).send({ Workouts });
+  saveWorkoutToFile(newWorkout, (workouts) => {
+    res.status(200).send({ Workouts: workouts });
+  });
 });
 
-const saveWorkoutToFile = (workout) => {
+const saveWorkoutToFile = (workout, cb) => {
+  console.log('Save');
   let workouts = [];
-  fs.readFile(p, (err, data) => {
-    if (!err && data.byteLength) {
+  fs.readFile(workoutsDBPath, (err, data) => {
+    if (err) throw err;
+    if (data.length) {
       workouts = JSON.parse(data);
     }
     workouts.push(workout);
-    fs.writeFile(p, JSON.stringify(workouts), (err) => {
-      if (err) console.log(err);
+
+    fs.writeFile(workoutsDBPath, JSON.stringify(workouts), (err) => {
+      if (err) throw err;
     });
+
+    cb(workouts);
   });
 };
 
-const fetchWorkoutsFromFile = () => {
+const fetchWorkoutsFromFile = (cb) => {
   let workouts = [];
-  fs.readFile(p, (err, data) => {
-    if (!err) {
+  fs.readFile(workoutsDBPath, (err, data) => {
+    if (err) throw err;
+    if (data.length) {
       workouts = JSON.parse(data);
-      return workouts;
-    } else return [];
+    }
+
+    cb(workouts);
   });
 };
+
+const deleteWorkoutFromFile = (id, cb) => {
+  let workouts = [];
+  fs.readFile(workoutsDBPath, (err, data) => {
+    if (err) throw err;
+    if (data.length) {
+      workouts = JSON.parse(data);
+    }
+    workouts = workouts.filter((w) => w.id != id);
+    console.log(workouts);
+
+    fs.writeFile(workoutsDBPath, JSON.stringify(workouts), (err) => {
+      if (err) throw err;
+    });
+
+    cb(workouts);
+  });
+};
+
+process.on('uncaughtException', (err) => {
+  console.error(`uncaught error: ${err} `);
+  process.exit(1);
+});
 
 module.exports = router;

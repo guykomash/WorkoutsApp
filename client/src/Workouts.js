@@ -25,14 +25,17 @@ const Workouts = () => {
   const getWorkouts = () => {
     axios
       .get(`${baseURL}/workouts`)
-      .then((res) => setWorkouts(res.data.Workouts))
+      .then((res) => {
+        console.log(res.data.Workouts);
+        setWorkouts(res.data.Workouts);
+      })
       .catch((error) => console.error(error));
   };
 
   const deleteWorkout = (workoutId) => {
     axios
       .post(`${baseURL}/workouts/delete-${workoutId}`)
-      .then((res) => console.log(res.data.Workouts))
+      .then((res) => setWorkouts(res.data.Workouts))
       .catch((error) => console.error(error));
   };
 

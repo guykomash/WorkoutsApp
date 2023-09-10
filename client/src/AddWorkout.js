@@ -1,5 +1,5 @@
 import { React, useState } from 'react';
-import { Grid, Typography, TextField, Button, Container } from '@mui/material';
+import { Grid, Typography, TextField, Button, Container, Paper } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,20 +9,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const AddWorkout = () => {
   // Add Workout form
   const [eId, setEId] = useState(1);
-  const [newUser, setNewUser] = useState('');
+  // const [newUser, setNewUser] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [newExercises, setNewExercises] = useState([
     { id: JSON.stringify(eId) },
   ]);
 
-  axios.defaults.withCredentials = true;
+  // axios.defaults.withCredentials = true;
   const baseURL = 'http://localhost:3080';
   const navigate = useNavigate();
 
   const sumbitWorkout = () => {
     let isValid = true;
 
-    if (!newUser || !newTitle) {
+    if (/*!newUser || */ !newTitle) {
       alert('please enter name and title');
       isValid = false;
     }
@@ -47,30 +47,30 @@ const AddWorkout = () => {
         reps: exercise.reps,
       }));
 
-      postWorkout(newUser, newTitle, postExercises);
-      setNewUser('');
+      postWorkout(/*newUser,*/ newTitle, postExercises);
+      // setNewUser('');
       setNewTitle('');
       setNewExercises([{}]);
       navigate('/workouts');
     }
   };
 
-  const postWorkout = (user, title, exercises) => {
+  const postWorkout = (/*user,*/ title, exercises) => {
     axios
       .post(
         `${baseURL}/workouts/add-workout`,
         {
           workout: {
-            user: user,
             title: title,
+            user: 'Guy Komash',
             exercises: exercises,
           },
-        },
-        {
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-          },
         }
+        // {
+        //   headers: {
+        //     'content-type': 'application/x-www-form-urlencoded',
+        //   },
+        // }
       )
       .then((res) => console.log(res))
       .catch((error) => console.error());
@@ -111,90 +111,91 @@ const AddWorkout = () => {
   };
   return (
     <Container maxWidth="sm">
-      <Grid item xs={12}>
-        <br />
-        <Typography variant="h4" align="center" gutterBottom>
-          Add Workout
-        </Typography>
-        <TextField
-          label="Workout Title"
-          fullWidth
-          margin="normal"
-          multiline
-          onChange={(event) => {
-            setNewTitle(event.target.value);
-          }}
-        />
-        <TextField
+      <br />
+      <Typography variant="h4" align="center" gutterBottom>
+        Add Workout
+      </Typography>
+      <Paper sx={{ p: 2 }}>
+        <Grid item xs={12}>
+          <TextField
+            label="Workout Title"
+            fullWidth
+            margin="normal"
+            onChange={(event) => {
+              setNewTitle(event.target.value);
+            }}
+          />
+          {/* <TextField
           label="Creator name"
           fullWidth
           margin="normal"
           onChange={(event) => {
             setNewUser(event.target.value);
           }}
-        />
+        /> */}
 
-        <Grid>
+          <Grid>
+            <br />
+            <Typography variant="h5" align="center">
+              {`Exercises:`}
+            </Typography>
+            <br />
+            {newExercises.map((exercise, index) => (
+              <Grid key={exercise.id}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: 18, fontStyle: 'italic' }}
+                >{`Exercise ${index + 1}`}</Typography>
+                <Button
+                  color="error"
+                  onClick={() => handleExerciseDelete(exercise.id)}
+                >
+                  <DeleteIcon></DeleteIcon>
+                </Button>
+                <TextField
+                  id={exercise.id}
+                  label="Title"
+                  value={exercise.title}
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) =>
+                    handleExerciseTitleChange(e.target.value, exercise.id)
+                  }
+                />
+                <TextField
+                  id={exercise.id}
+                  label="Sets"
+                  value={exercise.sets}
+                  margin="normal"
+                  onChange={(e) =>
+                    handleExerciseSetsChange(e.target.value, exercise.id)
+                  }
+                />
+                <TextField
+                  id={exercise.id}
+                  label="Reps"
+                  margin="normal"
+                  value={exercise.reps}
+                  onChange={(e) =>
+                    handleExerciseRepsChange(e.target.value, exercise.id)
+                  }
+                />
+                <br />
+              </Grid>
+            ))}
+          </Grid>
           <br />
-          <Typography variant="h5" align="center">
-            {`Exercises:`}
-          </Typography>
-          <br />
-          {newExercises.map((exercise, index) => (
-            <Grid key={exercise.id}>
-              <Typography
-                variant="body"
-                sx={{ fontSize: 18, fontStyle: 'italic' }}
-              >{`Exercise ${index + 1}`}</Typography>
-              <Button
-                color="error"
-                onClick={() => handleExerciseDelete(exercise.id)}
-              >
-                <DeleteIcon></DeleteIcon>
-              </Button>
-              <TextField
-                id={exercise.id}
-                label="Title"
-                value={exercise.title}
-                fullWidth
-                margin="normal"
-                onChange={(e) =>
-                  handleExerciseTitleChange(e.target.value, exercise.id)
-                }
-              />
-              <TextField
-                id={exercise.id}
-                label="Sets"
-                value={exercise.sets}
-                margin="normal"
-                onChange={(e) =>
-                  handleExerciseSetsChange(e.target.value, exercise.id)
-                }
-              />
-              <TextField
-                id={exercise.id}
-                label="Reps"
-                margin="normal"
-                value={exercise.reps}
-                onChange={(e) =>
-                  handleExerciseRepsChange(e.target.value, exercise.id)
-                }
-              />
-              <br />
-            </Grid>
-          ))}
+          <Button
+            color="primary"
+            aria-label="add"
+            variant="contained"
+            onClick={() => handleAddExercise()}
+          >
+            <AddIcon label="add" />
+            Add Exercise
+          </Button>
         </Grid>
-        <br />
-        <Button
-          color="primary"
-          aria-label="add"
-          variant="contained"
-          onClick={() => handleAddExercise()}
-        >
-          <AddIcon label="add" />
-          Add Exercise
-        </Button>
-      </Grid>
+      </Paper>
       <br />
       <Button
         fullWidth

@@ -23,7 +23,7 @@ import {
 } from '@mui/material';
 
 const WorkoutDetails = () => {
-  axios.defaults.withCredentials = true;
+  // axios.defaults.withCredentials = true;
   const baseURL = 'http://localhost:3080';
 
   const { workoutId } = useParams();
@@ -92,24 +92,13 @@ const WorkoutDetails = () => {
         <Paper sx={{ p: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography
-                variant="h6"
-                data-testid={`workoutDetails-title-${workout.id}`}
-              ></Typography>
-              <Typography
-                variant="h5"
-                align="center"
-                data-testid={`workoutDetails-titleContent-${workout.id}`}
-              >
+              <Typography variant="h6"></Typography>
+              <Typography variant="h5" align="center">
                 {workout.title}
               </Typography>
             </Grid>
             <Grid item xs={12} align="center">
-              <Typography
-                display={'inline'}
-                variant="body1"
-                data-testid={`workoutDetails-author-${workout.id}`}
-              >
+              <Typography display={'inline'} variant="body1">
                 Created by
               </Typography>
               <Typography

@@ -14,20 +14,25 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const Workouts = () => {
-  axios.defaults.withCredentials = true;
+const Workouts = ({ workouts, setWorkouts, getWorkouts }) => {
+  // axios.defaults.withCredentials = true;
   const baseURL = 'http://localhost:3080';
   const navigate = useNavigate();
-  const [workouts, setWorkouts] = useState([]);
+  // const [workouts, setWorkouts] = useState([]);
 
-  const getWorkouts = () => {
-    axios
-      .get(`${baseURL}/workouts`)
-      .then((res) => {
-        setWorkouts(res.data.Workouts);
-      })
-      .catch((error) => console.error(error));
-  };
+  // axios.defaults.headers.common = {
+  //   Authorization: `Bearer ${acce}`,
+  // };
+
+  // const getWorkouts = () => {
+  //   axios
+  //     .get(`${baseURL}/workouts`)
+  //     .then((res) => {
+  //       console.log(res.data.Workouts);
+  //       setWorkouts(res.data.Workouts);
+  //     })
+  //     .catch((error) => console.error(error));
+  // };
 
   const deleteWorkout = (workoutId) => {
     axios
@@ -35,7 +40,6 @@ const Workouts = () => {
       .then((res) => setWorkouts(res.data.Workouts))
       .catch((error) => console.error(error));
   };
-
   useEffect(() => {
     getWorkouts();
   }, []);
@@ -57,6 +61,7 @@ const Workouts = () => {
     navigate(`/workouts/edit/${workoutId}`);
   };
   const postWorkout = (user, title, exercises) => {
+    console.log('PostStam');
     axios
       .post(
         `${baseURL}/workouts/add-workout`,
@@ -66,12 +71,12 @@ const Workouts = () => {
             title: title,
             exercises: exercises,
           },
-        },
-        {
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-          },
         }
+        // {
+        //   headers: {
+        //     'content-type': 'application/x-www-form-urlencoded',
+        //   },
+        // }
       )
       .then((res) => {
         setWorkouts(res.data.Workouts);
@@ -99,32 +104,19 @@ const Workouts = () => {
   return (
     <Container maxWidth="sm">
       <br />
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
-        data-testid="bookListing-title"
-      >
+      <Typography variant="h4" align="center" gutterBottom>
         Workouts
       </Typography>
 
       {workouts.length == 0 ? (
-        <Typography
-          variant="body1"
-          align="center"
-          data-testid="Workouts-noWorkoutsAvailable"
-        >
+        <Typography variant="body1" align="center">
           No workouts available.
         </Typography>
       ) : (
-        <List data-testid={'Workouts-list'}>
+        <List>
           {workouts.map((workout) => (
             <ListItem key={workout.id} disablePadding>
-              <ListItemText
-                primary={workout.title}
-                secondary={workout.user}
-                data-testid={`Workouts-workout-${workout.id}`}
-              />
+              <ListItemText primary={workout.title} secondary={workout.user} />
               <Button
                 variant="outlined"
                 onClick={() => onViewDetailsClicked(workout.id)}
@@ -157,7 +149,6 @@ const Workouts = () => {
           },
         }}
         onClick={onAddWorkoutsBtn}
-        data-testid="filters-WorkoutsBtn"
       >
         <AddIcon label="add" />
         Add Workout

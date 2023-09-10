@@ -29,7 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const { v4: uuidv4 } = require('uuid');
 
 const EditWorkout = () => {
-  axios.defaults.withCredentials = true;
+  // axios.defaults.withCredentials = true;
   const baseURL = 'http://localhost:3080';
 
   const { workoutId } = useParams();
@@ -152,88 +152,90 @@ const EditWorkout = () => {
   };
   return (
     <Container maxWidth="sm">
-      <Grid item xs={12}>
-        <br />
-        <Typography variant="h4" align="center" gutterBottom>
-          Edit Workout
-        </Typography>
-        <TextField
-          label="Workout Title"
-          value={workout.title}
-          variant="filled"
-          fullWidth
-          margin="normal"
-          InputLabelProps={{ shrink: true }}
-          onChange={(e) => handleTitleChange(e.target.value)}
-        />
-        <TextField
-          label="Creator Name"
-          value={workout.user}
-          variant="filled"
-          fullWidth
-          margin="normal"
-          InputLabelProps={{ shrink: true }}
-          onChange={(e) => handleUserChange(e.target.value)}
-        />
-        {workout.exercises &&
-          workout.exercises.map((exercise, index) => (
-            <Grid key={exercise.id}>
-              <Typography
-                variant="body"
-                sx={{ fontSize: 18, fontStyle: 'italic' }}
-              >{`Exercise ${index + 1}`}</Typography>
-              <Button
-                color="error"
-                onClick={() => handleExerciseDelete(exercise.id)}
-              >
-                <DeleteIcon></DeleteIcon>
-              </Button>
-              <TextField
-                id={exercise.id}
-                label="Title"
-                value={exercise.title}
-                variant="filled"
-                fullWidth
-                margin="normal"
-                onChange={(e) =>
-                  handleExerciseTitleChange(e.target.value, exercise.id)
-                }
-              />
-              <TextField
-                id={exercise.id}
-                label="Sets"
-                value={exercise.sets}
-                margin="normal"
-                variant="filled"
-                onChange={(e) =>
-                  handleExerciseSetsChange(e.target.value, exercise.id)
-                }
-              />
-              <TextField
-                id={exercise.id}
-                label="Reps"
-                margin="normal"
-                value={exercise.reps}
-                variant="filled"
-                onChange={(e) =>
-                  handleExerciseRepsChange(e.target.value, exercise.id)
-                }
-              />
+      <br />
+      <Typography variant="h4" align="center" gutterBottom>
+        Edit Workout
+      </Typography>
+      <Paper sx={{ p: 2 }}>
+        <Grid item xs={12}>
+          <TextField
+            label="Workout Title"
+            value={workout.title}
+            variant="filled"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+            onChange={(e) => handleTitleChange(e.target.value)}
+          />
+          <TextField
+            label="Creator Name"
+            value={workout.user}
+            variant="filled"
+            fullWidth
+            margin="normal"
+            InputLabelProps={{ shrink: true }}
+            onChange={(e) => handleUserChange(e.target.value)}
+          />
+          {workout.exercises &&
+            workout.exercises.map((exercise, index) => (
+              <Grid key={exercise.id}>
+                <Typography
+                  variant="body"
+                  sx={{ fontSize: 18, fontStyle: 'italic' }}
+                >{`Exercise ${index + 1}`}</Typography>
+                <Button
+                  color="error"
+                  onClick={() => handleExerciseDelete(exercise.id)}
+                >
+                  <DeleteIcon></DeleteIcon>
+                </Button>
+                <TextField
+                  id={exercise.id}
+                  label="Title"
+                  value={exercise.title}
+                  variant="filled"
+                  fullWidth
+                  margin="normal"
+                  onChange={(e) =>
+                    handleExerciseTitleChange(e.target.value, exercise.id)
+                  }
+                />
+                <TextField
+                  id={exercise.id}
+                  label="Sets"
+                  value={exercise.sets}
+                  margin="normal"
+                  variant="filled"
+                  onChange={(e) =>
+                    handleExerciseSetsChange(e.target.value, exercise.id)
+                  }
+                />
+                <TextField
+                  id={exercise.id}
+                  label="Reps"
+                  margin="normal"
+                  value={exercise.reps}
+                  variant="filled"
+                  onChange={(e) =>
+                    handleExerciseRepsChange(e.target.value, exercise.id)
+                  }
+                />
 
-              <br />
-            </Grid>
-          ))}
-        <br />
-        <Button
-          color="primary"
-          aria-label="add"
-          variant="contained"
-          onClick={() => handleAddExercise()}
-        >
-          <AddIcon label="add" />
-          Add Exercise
-        </Button>
-      </Grid>
+                <br />
+              </Grid>
+            ))}
+          <br />
+          <Button
+            color="primary"
+            aria-label="add"
+            variant="contained"
+            onClick={() => handleAddExercise()}
+          >
+            <AddIcon label="add" />
+            Add Exercise
+          </Button>
+        </Grid>
+      </Paper>
       <br />
       <Button
         fullWidth

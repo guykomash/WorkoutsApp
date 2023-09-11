@@ -1,8 +1,8 @@
-const { baseUrl } = require('../../constants');
+const { baseURL } = require('../../constants');
 
 const corsOptions = {
-  origin: `${baseUrl.client}`,
-  // credentials: true,
+  origin: `${baseURL.client}`,
+  credentials: true,
 };
 
 module.exports = corsOptions;

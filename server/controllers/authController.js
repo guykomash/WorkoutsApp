@@ -25,6 +25,7 @@ const handleLogin = async (req, res) => {
   // evaluate password
   const match = await bcrypt.compare(pwd, foundUser.password);
   if (match) {
+    //.filter(Boolean) check
     const roles = Object.values(foundUser.roles);
     console.log(roles);
     // create JWTs
@@ -60,9 +61,11 @@ const handleLogin = async (req, res) => {
     res
       .cookie('jwt', refreshToken, {
         httpOnly: true,
+        sameSite: 'None',
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .send({ accessToken });
+      .send({ roles, accessToken });
   } else {
     // passwords don't match
     res.sendStatus(401);

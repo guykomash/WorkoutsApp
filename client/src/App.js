@@ -1,70 +1,53 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Nav from './Nav';
-import Home from './Home';
-import Workouts from './Workouts';
-import AddWorkout from './AddWorkout';
-import PageNotFound from './PageNotFound';
-import Timer from './Timer';
-import WorkoutDetails from './WorkoutDetails';
-import NewSession from './NewSession';
-import EditWorkout from './EditWorkout';
-import Login from './Login';
-import Register from './Register';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import axios from 'axios';
+import Home from './components/Home';
+import Workouts from './components/Workouts';
+import AddWorkout from './components/AddWorkout';
+import PageNotFound from './components/PageNotFound';
+import Timer from './components/Timer';
+import WorkoutDetails from './components/WorkoutDetails';
+import NewSession from './components/NewSession';
+import EditWorkout from './components/EditWorkout';
+import Login from './components/Login';
+import Register from './components/Register';
+import Layout from './components/Layout';
+import Unauthorized from './components/Unauthorized';
+import RequireAuth from './components/RequireAuth';
+import Welcome from './components/Welcome';
+
+const ROLES = {
+  User: 1111,
+  Editor: 2222,
+  Admin: 3333,
+};
+
 const App = () => {
-  // axios.defaults.withCredentials = true;
-  const baseURL = 'http://localhost:3080';
-  const [accessToken, setAccessToken] = useState('');
-  const [workouts, setWorkouts] = useState([]);
-
-  const handleLogin = (_accessToken) => {
-    console.log(`got access! \n ${accessToken}`);
-    setAccessToken(_accessToken);
-  };
-
-  const getWorkouts = () => {
-    axios
-      .get(`${baseURL}/workouts`)
-      .then((res) => {
-        console.log(res.data.Workouts);
-        setWorkouts(res.data.Workouts);
-      })
-      .catch((error) => console.error(error));
-  };
-
   return (
-    <div className="App">
-      <Nav />
-      <Router>
-        <Routes>
-          <Route
-            path="/login"
-            element={<Login setAccessToken={handleLogin} />}
-          />
-          <Route path="/register" element={<Register />} />
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        {/*public routes*/}
+        <Route path="welcome" element={<Welcome />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="unauthorized" element={<Unauthorized />} />
+
+        {/*Protected routes*/}
+        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
           <Route path="/" element={<Home />} />
-          <Route
-            path="/workouts"
-            element={
-              <Workouts
-                workouts={workouts}
-                setWorkouts={setWorkouts}
-                getWorkouts={getWorkouts}
-              />
-            }
-          />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+          <Route path="/workouts" element={<Workouts />} />
           <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
           <Route path="/workouts/add-workout" element={<AddWorkout />} />
           <Route path="/workouts/edit/:workoutId" element={<EditWorkout />} />
           <Route path="/sessions/new-session" element={<NewSession />} />
-
           <Route path="/timer" element={<Timer />} />
-          <Route path="/*" element={<PageNotFound />} />
-        </Routes>
-      </Router>
-    </div>
+        </Route>
+        <Route path="/*" element={<PageNotFound />} />
+      </Route>
+    </Routes>
   );
 };
 

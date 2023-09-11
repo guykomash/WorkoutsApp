@@ -7,23 +7,34 @@ import {
   Paper,
   Button,
 } from '@mui/material';
-import axios from 'axios';
+
+import axios from '../api/axios';
+import useAuth from '../hooks/useAuth';
+
 const Register = () => {
-  // axios.defaults.withCredentials = true;
-  const baseURL = 'http://localhost:3080';
-  const [userName, setUserName] = useState('');
+  const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
 
+  const { auth } = useAuth();
+
   const handleRegisterBtn = () => {
-    if (!userName || !pwd) return alert('empty fields');
+    if (!user || !pwd) return alert('empty fields');
     axios
-      .post(`${baseURL}/register`, {
-        user: userName,
-        pwd: pwd,
-      })
+      .post(
+        `/register`,
+        {
+          user: user,
+          pwd: pwd,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
       .then((res) => {
         console.log(res);
-        setUserName('');
+        setUser('');
         setPwd('');
       })
       .catch((err) => console.error(err));
@@ -34,14 +45,15 @@ const Register = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Register
       </Typography>
+      <div>accessToken = {auth.accessToken}</div>
       <Paper sx={{ p: 2 }}>
         <Grid item xs={12}>
           <TextField
             label="User Name"
             fullWidth
             margin="normal"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            value={user}
+            onChange={(e) => setUser(e.target.value)}
           />
           <TextField
             label="Password"
@@ -52,6 +64,7 @@ const Register = () => {
           />
           <Button
             variant="contained"
+            disabled={!user || !pwd}
             style={{ minWidth: '100%' }}
             onClick={handleRegisterBtn}
           >

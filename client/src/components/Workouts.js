@@ -20,7 +20,6 @@ import useRefreshToken from '../hooks/useRefreshToken';
 const Workouts = () => {
   const navigate = useNavigate();
   const [workouts, setWorkouts] = useState([]);
-  const refresh = useRefreshToken();
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
 
@@ -63,7 +62,6 @@ const Workouts = () => {
     axiosPrivate
       .post(`/workouts/add-workout`, {
         workout: {
-          user: auth.user.name,
           title: title,
           exercises: exercises,
         },
@@ -79,8 +77,6 @@ const Workouts = () => {
   const addStamWorkout = () => {
     const stam = {
       title: 'Stam Workout',
-      user: auth.user.name,
-      lastUpdated: '04/09/2023',
       exercises: [
         { id: '1', title: 'Bench Press', sets: '3', reps: '8' },
         { id: '2', title: 'Lat Pulldown', sets: '3', reps: '10' },
@@ -106,7 +102,10 @@ const Workouts = () => {
         <List>
           {workouts.map((workout) => (
             <ListItem key={workout._id} disablePadding>
-              <ListItemText primary={workout.title} secondary={workout.user} />
+              <ListItemText
+                primary={workout.title}
+                secondary={`${auth.firstName} ${auth.lastName}`}
+              />
               <Button
                 variant="outlined"
                 onClick={() => onViewDetailsClicked(workout._id)}

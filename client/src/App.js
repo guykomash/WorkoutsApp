@@ -39,13 +39,21 @@ const App = () => {
         <Route path="unauthorized" element={<Unauthorized />} />
 
         {/*Protected routes*/}
-
+        <Route
+          element={
+            <RequireAuth
+              logoutNavTo={NAV.Welcome}
+              allowedRoles={[ROLES.User]}
+            />
+          }
+        >
+          <Route path="/" element={<Home />} />
+        </Route>
         <Route
           element={
             <RequireAuth logoutNavTo={NAV.Login} allowedRoles={[ROLES.User]} />
           }
         >
-          <Route path="/" element={<Home />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
           <Route path="/workouts/add-workout" element={<AddWorkout />} />

@@ -1,1 +1,30 @@
-[{"username":"testuser","roles":{"User":1111,"Editor":2222},"password":"$2b$10$YgHh1xS57l4BO/01tqni5.BoY2z88cw/EaVGzsESwPmgdG6zPuVMe","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNjk0MzYyMzYzLCJleHAiOjE2OTQ0NDg3NjN9.VX7Pd0uZc0IGlXU5ghVQw4zdsK0GU3drj27-DUdhzKA"},{"username":"test3","roles":{"User":1111},"password":"$2b$10$r/TjqTLdllqRYFt8DZqhjeamctEHlh/BkB1l47wFXwGeAmnKxTgZu"},{"username":"test2","roles":{"User":1111},"password":"$2b$10$BVD2PzgxsPFxbvU3J4GmO.jDj4oJIKVZBNVD3Qj7f5Ca0jBR..lnC","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QyIiwiaWF0IjoxNjk0NDMzOTEzLCJleHAiOjE2OTQ1MjAzMTN9.oMhSyzA6NTd9VIN-SaaS5OApVu1JoHDsPI73gS0oIUw"},{"username":"test","roles":{"User":1111,"Editor":2222,"Admin":3333},"password":"$2b$10$CyWryWj0iKKY0eyQktlp/.F1yLVGJTIet0RAqt/Tfes7y0ZvN9zjK","refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2OTQ0NDkzMDcsImV4cCI6MTY5NDUzNTcwN30.t1dCjlkVp7A-PtZb5FgqkVKagsFbiMu4WKKuj9pykCY"}]
+[
+  {
+    "username": "test3",
+    "roles": { "User": 1111 },
+    "password": "$2b$10$r/TjqTLdllqRYFt8DZqhjeamctEHlh/BkB1l47wFXwGeAmnKxTgZu"
+  },
+  {
+    "username": "test2",
+    "roles": { "User": 1111 },
+    "password": "$2b$10$BVD2PzgxsPFxbvU3J4GmO.jDj4oJIKVZBNVD3Qj7f5Ca0jBR..lnC"
+  },
+  {
+    "username": "testuser",
+    "roles": { "User": 1111, "Editor": 2222 },
+    "password": "$2b$10$YgHh1xS57l4BO/01tqni5.BoY2z88cw/EaVGzsESwPmgdG6zPuVMe",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNjk0NTA5NDI0LCJleHAiOjE2OTQ1OTU4MjR9.M2QxR3QuMgeDllrdYizwGC3lPEhgYK05O5V_CMUMNwM"
+  },
+  {
+    "username": "aus",
+    "roles": { "User": 1111 },
+    "password": "$2b$10$wl6IV.sjSQ44u1QRSGbV4OOjUKdyx8pzS9DmgYKGNjqpuZM3pETI6",
+    "refreshToken": ""
+  },
+  {
+    "username": "test",
+    "roles": { "User": 1111, "Editor": 2222, "Admin": 3333 },
+    "password": "$2b$10$CyWryWj0iKKY0eyQktlp/.F1yLVGJTIet0RAqt/Tfes7y0ZvN9zjK",
+    "refreshToken": ""
+  }
+]

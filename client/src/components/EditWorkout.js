@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import {
   Button,
   Container,
@@ -29,17 +29,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const { v4: uuidv4 } = require('uuid');
 
 const EditWorkout = () => {
-  // axios.defaults.withCredentials = true;
-  const baseURL = 'http://localhost:3080';
-
+  const axiosPrivate = useAxiosPrivate();
   const { workoutId } = useParams();
   const navigate = useNavigate();
 
   const [workout, setWorkout] = useState([]);
 
   const getWorkout = () => {
-    axios
-      .get(`${baseURL}/workouts/${workoutId}`)
+    axiosPrivate
+      .get(`/workouts/${workoutId}`)
       .then((res) => {
         if (res.data.workout) {
           setWorkout(res.data.workout);
@@ -50,9 +48,9 @@ const EditWorkout = () => {
 
   const updateWorkout = (workout) => {
     console.log('updatedWorkout');
-    axios
+    axiosPrivate
       .post(
-        `${baseURL}/workouts/${workout.id}`,
+        `/workouts/${workout.id}`,
         {
           workout,
         },

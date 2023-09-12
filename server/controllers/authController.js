@@ -1,14 +1,7 @@
-const usersDB = {
-  users: require('../models/users.json'),
-  setUsers: function (data) {
-    this.users = data;
-  },
-};
+const User = require('../models/User');
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const fsPromises = require('fs/promises');
-const path = require('path');
 
 const handleLogin = async (req, res) => {
   console.log('auth: handleLogin()');
@@ -19,7 +12,7 @@ const handleLogin = async (req, res) => {
       .json({ message: 'Username and password are required' });
 
   //try to find user in db
-  const foundUser = usersDB.users.find((u) => u.username === user);
+  const foundUser = await User.findOne({ username: user }).exec();
   if (!foundUser) return res.sendStatus(401);
 
   // evaluate password
@@ -27,7 +20,7 @@ const handleLogin = async (req, res) => {
   if (match) {
     //.filter(Boolean) check
     const roles = Object.values(foundUser.roles);
-    console.log(roles);
+    // console.log(roles);
     // create JWTs
     const accessToken = jwt.sign(
       {
@@ -47,17 +40,12 @@ const handleLogin = async (req, res) => {
 
     //updating DB users: update the logged in user with his refreshToken
 
-    const otherUsers = usersDB.users.filter(
-      (u) => u.username !== foundUser.username
-    );
-    const currentUser = { ...foundUser, refreshToken };
-    usersDB.setUsers([...otherUsers, currentUser]);
+    await User.updateOne(
+      { username: foundUser.username },
+      { refreshToken: refreshToken }
+    ).exec();
 
-    await fsPromises.writeFile(
-      path.join(__dirname, '..', 'models', 'users.json'),
-      JSON.stringify(usersDB.users)
-    );
-
+    const userId = foundUser._id;
     res
       .cookie('jwt', refreshToken, {
         httpOnly: true,
@@ -65,7 +53,8 @@ const handleLogin = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .send({ roles, accessToken });
+      .cookie('userId', userId)
+      .send({ userId, accessToken });
   } else {
     // passwords don't match
     res.sendStatus(401);

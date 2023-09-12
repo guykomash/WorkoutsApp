@@ -12,9 +12,6 @@ const Unauthorized = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Unauthorized
       </Typography>
-      <Button variant="contained" color="error" fullWidth onClick={goBack}>
-        Go back
-      </Button>
     </Container>
   );
 };

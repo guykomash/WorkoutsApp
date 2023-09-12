@@ -1,31 +1,24 @@
-const { ObjectId } = require('mongodb');
-const { getDB } = require('../database/mongoDB');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const saveUser = (user, cb) => {
-  const db = getDB();
-  db.collection('users')
-    .insertOne(user)
-    .then(() => fetchAllUsers(cb))
-    .catch((err) => console.error(err));
-};
+const userSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  roles: {
+    User: {
+      type: Number,
+      default: 1111,
+    },
+    Editor: Number,
+    Admin: Number,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  refreshToken: String,
+});
 
-const fetchAllUsers = (cb) => {
-  const db = getDB();
-  db.collection('users')
-    .find()
-    .toArray()
-    .then((users) => cb(users))
-    .catch((err) => console.error(err));
-};
-
-const fetchUserById = (userId, cb) => {
-  const db = getDB();
-  db.collection('users')
-    .findOne({ _id: new ObjectId(userId) })
-    .then((user) => {
-      cb(user);
-    })
-    .catch((err) => console.error(err));
-};
-
-module.exports = { saveUser, fetchAllUsers, fetchUserById };
+module.exports = mongoose.model('User', userSchema);

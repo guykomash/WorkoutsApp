@@ -1,12 +1,4 @@
-const usersDB = {
-  users: require('../models/users.json'),
-  setUsers: function (data) {
-    this.users = data;
-  },
-};
-
-const fsPromises = require('fs').promises;
-const path = require('path');
+const User = require('../models/User');
 
 // hash passwords
 const bcrypt = require('bcrypt');
@@ -20,27 +12,21 @@ const handleNewUser = async (req, res) => {
       .json({ message: 'Username and password are required' });
 
   // check for duplicates usernames in db (username registered is already exists.)
-  const duplicate = usersDB.users.find((u) => u.username === user);
+  const duplicate = await User.findOne({ username: user }).exec();
   if (duplicate) return res.sendStatus(409); // 409 = Conflict
 
   try {
     //ecnrypt the password
     const hashedPwd = await bcrypt.hash(pwd, 10); // salt is 10.
 
-    // store new user
-    const newUser = {
+    // Create and store new user
+    const result = User.create({
       username: user,
-      roles: { User: 1111 },
       password: hashedPwd,
-    };
-    usersDB.setUsers([...usersDB.users, newUser]);
+    });
 
-    // save user in DB
-    await fsPromises.writeFile(
-      path.join(__dirname, '..', 'models', 'users.json'),
-      JSON.stringify(usersDB.users)
-    );
-    console.log(usersDB.users);
+    console.log(result);
+
     res.status(201).json({ message: `New user ${user} created!` });
   } catch (err) {
     res.status(500).json({ message: err.message }); // 500 - server error

@@ -10,10 +10,13 @@ import {
 
 import axios from '../api/axios';
 import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const [hasRegistered, setHasRegistered] = useState(false);
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
+  const navigate = useNavigate();
 
   const { auth } = useAuth();
 
@@ -34,18 +37,32 @@ const Register = () => {
       )
       .then((res) => {
         console.log(res);
-        setUser('');
-        setPwd('');
+        setHasRegistered(true);
       })
       .catch((err) => console.error(err));
   };
-  return (
+  return hasRegistered ? (
+    <Container maxWidth="sm">
+      <br />
+      <Typography variant="h4" align="center" gutterBottom>
+        Registered successfuly!
+      </Typography>
+      <br />
+      <Button
+        fullWidth
+        onClick={() => {
+          navigate('/login');
+        }}
+      >
+        CLICK HERE TO LOG IN!
+      </Button>
+    </Container>
+  ) : (
     <Container maxWidth="sm">
       <br />
       <Typography variant="h4" align="center" gutterBottom>
         Register
       </Typography>
-      <div>accessToken = {auth.accessToken}</div>
       <Paper sx={{ p: 2 }}>
         <Grid item xs={12}>
           <TextField

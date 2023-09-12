@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import {
   Container,
@@ -16,8 +16,6 @@ const Login = () => {
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
   const { auth, setAuth } = useAuth();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
 
   const handleLoginBtn = async () => {
     if (!user || !pwd) return alert('empty fields');
@@ -33,13 +31,12 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      console.log(res?.data);
       const accessToken = res?.data?.accessToken;
-      const roles = res?.data?.roles;
-      setAuth({ user, pwd, roles, accessToken });
+      const userId = res?.data?.userId;
+      setAuth({ user: { name: user, id: userId }, accessToken });
       setUser('');
       setPwd('');
-      navigate(from, { replace: true });
+      navigate('/');
     } catch (err) {
       console.error(err);
     }
@@ -50,7 +47,6 @@ const Login = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Login
       </Typography>
-      <div>accessToken = {auth.accessToken}</div>
       <Paper sx={{ p: 2 }}>
         <Grid item xs={12}>
           <TextField

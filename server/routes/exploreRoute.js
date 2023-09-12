@@ -7,15 +7,6 @@ const verifyRoles = require('../middleware/verifyRoles');
 
 router
   .route('/')
-  .get(verifyRoles(ROLES_LIST.User), workoutsController.fetchByUser);
-
-router
-  .route('/:workoutId')
-  .get(workoutsController.fetchById)
-  .delete(workoutsController.deleteById);
-
-router
-  .route('/add-workout')
-  .post(verifyRoles(ROLES_LIST.User), workoutsController.addWorkout);
+  .get(verifyRoles(ROLES_LIST.User), workoutsController.fetchAll);
 
 module.exports = router;

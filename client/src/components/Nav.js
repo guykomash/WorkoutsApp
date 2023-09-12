@@ -191,7 +191,7 @@ function Nav() {
                     ':hover': { color: 'gold' },
                   }}
                 >
-                  {auth.user.name.split()[0]}
+                  {auth.firstName}
                 </Button>
               </Tooltip>
               <Menu
@@ -383,6 +383,7 @@ function Nav() {
     );
   };
 
-  return auth?.user ? renderLoggedInNav() : renderLoggedOutNav();
+  return auth?.accessToken ? renderLoggedInNav() : renderLoggedOutNav();
 }
+
 export default Nav;

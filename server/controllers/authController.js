@@ -45,7 +45,6 @@ const handleLogin = async (req, res) => {
       { refreshToken: refreshToken }
     ).exec();
 
-    const userId = foundUser._id;
     res
       .cookie('jwt', refreshToken, {
         httpOnly: true,
@@ -53,8 +52,14 @@ const handleLogin = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .cookie('userId', userId)
-      .send({ userId, accessToken });
+      .cookie('userId', foundUser._id)
+      .send({
+        userId: foundUser._id,
+        userName: foundUser.username,
+        userFirstName: foundUser.firstname,
+        userLastName: foundUser.lastname,
+        accessToken,
+      });
   } else {
     // passwords don't match
     res.sendStatus(401);

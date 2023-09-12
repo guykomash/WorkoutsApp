@@ -16,6 +16,8 @@ const Register = () => {
   const [hasRegistered, setHasRegistered] = useState(false);
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const navigate = useNavigate();
 
   const { auth } = useAuth();
@@ -28,6 +30,8 @@ const Register = () => {
         {
           user: user,
           pwd: pwd,
+          firstName: firstName,
+          lastName: lastName,
         },
         {
           headers: {
@@ -61,10 +65,34 @@ const Register = () => {
     <Container maxWidth="sm">
       <br />
       <Typography variant="h4" align="center" gutterBottom>
-        Register
+        Welcome to WORKOUTS
       </Typography>
+      <br />
       <Paper sx={{ p: 2 }}>
         <Grid item xs={12}>
+          {/* <br /> */}
+          <Typography variant="h6" align="center" gutterBottom>
+            Enter full name
+          </Typography>
+          <TextField
+            label="First Name"
+            fullWidth
+            margin="normal"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <TextField
+            label="Last Name"
+            fullWidth
+            margin="normal"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <br />
+          <br />
+          <Typography variant="h6" align="center" gutterBottom>
+            Enter user name and password
+          </Typography>
           <TextField
             label="User Name"
             fullWidth
@@ -81,7 +109,7 @@ const Register = () => {
           />
           <Button
             variant="contained"
-            disabled={!user || !pwd}
+            disabled={!user || !pwd || !firstName || !lastName}
             style={{ minWidth: '100%' }}
             onClick={handleRegisterBtn}
           >

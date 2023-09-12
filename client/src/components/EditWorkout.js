@@ -40,7 +40,10 @@ const EditWorkout = () => {
       .get(`/workouts/${workoutId}`)
       .then((res) => {
         if (res.data.workout) {
-          setWorkout(res.data.workout);
+          const id = res?.data?.workout?.id;
+          const title = res?.data?.workout?.title || [];
+          const exercises = res?.data?.workout?.exercises || [];
+          setWorkout({ title, exercises });
         } else navigate('/404');
       })
       .catch((error) => console.error(error));
@@ -50,7 +53,7 @@ const EditWorkout = () => {
     console.log('updatedWorkout');
     axiosPrivate
       .post(
-        `/workouts/${workout.id}`,
+        `/workouts/${workoutId}`,
         {
           workout,
         },
@@ -139,14 +142,16 @@ const EditWorkout = () => {
     const formattedExercises = workout.exercises.map((e, index) => {
       return { ...e, id: JSON.stringify(index + 1) };
     });
+
     const formattedWorkout = {
-      ...workout,
+      title: workout.title,
       exercises: formattedExercises,
     };
 
+    console.log(formattedWorkout);
     //updateWorkout HTTP REQUREST! , than navigate /workouts.
-    updateWorkout(formattedWorkout);
-    navigate('/workouts');
+    // updateWorkout(formattedWorkout);
+    // navigate('/workouts');
   };
   return (
     <Container maxWidth="sm">
@@ -164,15 +169,6 @@ const EditWorkout = () => {
             margin="normal"
             InputLabelProps={{ shrink: true }}
             onChange={(e) => handleTitleChange(e.target.value)}
-          />
-          <TextField
-            label="Creator Name"
-            value={workout.user}
-            variant="filled"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            onChange={(e) => handleUserChange(e.target.value)}
           />
           {workout.exercises &&
             workout.exercises.map((exercise, index) => (

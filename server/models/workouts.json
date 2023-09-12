@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "title": "Stam Workout",
+    "title": "Stam Workout2",
     "user": "Nadav Komash",
     "userId": "req.user._id",
     "lastUpdated": "10/09/2023 3:36:45 PM",
@@ -13,11 +13,22 @@
     ]
   },
   {
-    "id": "6fc73bac-6df3-4572-a334-398ecae4b212",
+    "id": "783bbe1a-a7a3-4548-997f-eb4a42499d14",
+    "title": "stan",
+    "user": "Guy Komash",
+    "userId": "req.user._id",
+    "lastUpdated": "12/09/2023 2:41:17 PM",
+    "exercises": [
+      { "id": "1", "title": "sd", "sets": "sd", "reps": "sd" },
+      { "id": "2", "title": "sd", "sets": "sd", "reps": "sdddddd" }
+    ]
+  },
+  {
+    "id": "c2b2e39e-7244-4e7c-b8b1-4c6f09bb525f",
     "title": "Stam Workout",
     "user": "Nadav Komash",
     "userId": "req.user._id",
-    "lastUpdated": "10/09/2023 5:45:48 PM",
+    "lastUpdated": "12/09/2023 2:47:06 PM",
     "exercises": [
       { "id": "1", "title": "Bench Press", "sets": "3", "reps": "8" },
       { "id": "2", "title": "Lat Pulldown", "sets": "3", "reps": "10" },

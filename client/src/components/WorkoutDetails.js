@@ -1,4 +1,4 @@
-import axios from 'axios';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -23,21 +23,20 @@ import {
 } from '@mui/material';
 
 const WorkoutDetails = () => {
-  // axios.defaults.withCredentials = true;
-  const baseURL = 'http://localhost:3080';
+  const axiosPrivate = useAxiosPrivate();
 
   const { workoutId } = useParams();
   const navigate = useNavigate();
 
   const onWorkoutsBtn = () => {
-    navigate('/workouts');
+    navigate(-1);
   };
 
   const [workout, setWorkout] = useState([]);
 
   const getWorkout = () => {
-    axios
-      .get(`${baseURL}/workouts/${workoutId}`)
+    axiosPrivate
+      .get(`/workouts/${workoutId}`)
       .then((res) => setWorkout(res.data.workout))
       .catch((error) => console.error(error));
   };
@@ -63,12 +62,18 @@ const WorkoutDetails = () => {
           <TableBody>
             {exercises.map((exercise) => (
               <TableRow
-                key={exercise.name}
+                key={exercise.title}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell>{exercise.title}</TableCell>
-                <TableCell align="right">{exercise.sets}</TableCell>
-                <TableCell align="right">{exercise.reps}</TableCell>
+                <TableCell key={`exercise-${exercise.id}-title`}>
+                  {exercise.title}
+                </TableCell>
+                <TableCell key={`exercise-${exercise.id}-sets`} align="right">
+                  {exercise.sets}
+                </TableCell>
+                <TableCell key={`exercise-${exercise.id}-reps`} align="right">
+                  {exercise.reps}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -160,7 +165,7 @@ const WorkoutDetails = () => {
         onClick={onWorkoutsBtn}
         data-testid="filters-WorkoutsBtn"
       >
-        Back to Workouts
+        go Back
       </Button>
     </Container>
   );

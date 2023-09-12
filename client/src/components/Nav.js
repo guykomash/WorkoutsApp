@@ -1,32 +1,33 @@
-import { React, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import FitnessIcon from '@mui/icons-material/FitnessCenter';
+import MenuIcon from '@mui/icons-material/Menu';
+import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { React, useState } from 'react';
 
+import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import useLogout from '../hooks/useLogout';
 
 function Nav() {
+  const navigate = useNavigate();
   const { auth } = useAuth();
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const logout = useLogout();
 
   const handleOpenNavMenu = (event) => {
-    console.log(event.currentTarget);
     setAnchorElNav(event.currentTarget);
   };
   const handleOpenUserMenu = (event) => {
-    console.log(event.currentTarget);
     setAnchorElUser(event.currentTarget);
   };
 
@@ -38,15 +39,29 @@ function Nav() {
     setAnchorElUser(null);
   };
 
+  // User Functions
+  const handleLogoutBtn = async () => {
+    await logout();
+    navigate('/');
+  };
+
   const renderLoggedInNav = () => {
     const pages = [
       { name: 'Home', path: '/' },
-      { name: 'Login', path: '/login' },
       { name: 'New Session', path: '/sessions/new-session' },
       { name: 'Workouts', path: '/workouts' },
       { name: 'Timer', path: '/timer' },
+      { name: 'Explore', path: '/explore' },
     ];
-    const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+    const printOnClick = () => {
+      console.log('menuOnClick');
+    };
+
+    const settings = [
+      { name: 'Profile', onClick: printOnClick },
+      { name: 'Logout', onClick: handleLogoutBtn },
+    ];
 
     return (
       <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
@@ -149,7 +164,6 @@ function Nav() {
                 <Button
                   component={Link}
                   to={page.path}
-                  // href={page.path}
                   key={page.name}
                   onClick={handleCloseNavMenu}
                   sx={{
@@ -166,9 +180,19 @@ function Nav() {
 
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
+                <Button
+                  onClick={handleOpenUserMenu}
+                  size="large"
+                  sx={{
+                    my: 2,
+                    color: 'black',
+                    backgroundColor: 'gold',
+                    display: 'block',
+                    ':hover': { color: 'gold' },
+                  }}
+                >
+                  {auth.user.name.split()[0]}
+                </Button>
               </Tooltip>
               <Menu
                 sx={{ mt: '45px' }}
@@ -188,11 +212,13 @@ function Nav() {
               >
                 {settings.map((setting) => (
                   <MenuItem
-                    component={Link}
-                    key={setting}
-                    onClick={handleCloseUserMenu}
+                    key={setting.name}
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      setting.onClick();
+                    }}
                   >
-                    <Typography textAlign="center">{setting}</Typography>
+                    <Typography textAlign="center">{setting.name}</Typography>
                   </MenuItem>
                 ))}
               </Menu>

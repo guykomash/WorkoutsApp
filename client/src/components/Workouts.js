@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../api/axios';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
+import useAuth from '../hooks/useAuth';
 import {
   Typography,
   List,
@@ -20,19 +21,21 @@ const Workouts = () => {
   const navigate = useNavigate();
   const [workouts, setWorkouts] = useState([]);
   const refresh = useRefreshToken();
+  const axiosPrivate = useAxiosPrivate();
+  const { auth } = useAuth();
+
   const getWorkouts = () => {
-    axios
-      .get(`/workouts`, { withCredentials: true })
+    axiosPrivate
+      .get(`/workouts`)
       .then((res) => {
-        console.log(res.data.Workouts);
         setWorkouts(res.data.Workouts);
       })
       .catch((error) => console.error(error));
   };
 
   const deleteWorkout = (workoutId) => {
-    axios
-      .post(`/workouts/delete-${workoutId}`)
+    axiosPrivate
+      .delete(`/workouts/${workoutId}`)
       .then((res) => setWorkouts(res.data.Workouts))
       .catch((error) => console.error(error));
   };
@@ -56,12 +59,11 @@ const Workouts = () => {
     console.log('edit ' + workoutId);
     navigate(`/workouts/edit/${workoutId}`);
   };
-  const postWorkout = (user, title, exercises) => {
-    console.log('PostStam');
-    axios
+  const postWorkout = (title, exercises) => {
+    axiosPrivate
       .post(`/workouts/add-workout`, {
         workout: {
-          user: user,
+          user: auth.user.name,
           title: title,
           exercises: exercises,
         },
@@ -77,7 +79,7 @@ const Workouts = () => {
   const addStamWorkout = () => {
     const stam = {
       title: 'Stam Workout',
-      user: 'Nadav Komash',
+      user: auth.user.name,
       lastUpdated: '04/09/2023',
       exercises: [
         { id: '1', title: 'Bench Press', sets: '3', reps: '8' },
@@ -86,7 +88,7 @@ const Workouts = () => {
         { id: '4', title: 'Lateral Rises', sets: '4', reps: '8' },
       ],
     };
-    postWorkout(stam.user, stam.title, stam.exercises);
+    postWorkout(stam.title, stam.exercises);
   };
 
   return (
@@ -103,28 +105,28 @@ const Workouts = () => {
       ) : (
         <List>
           {workouts.map((workout) => (
-            <ListItem key={workout.id} disablePadding>
+            <ListItem key={workout._id} disablePadding>
               <ListItemText primary={workout.title} secondary={workout.user} />
               <Button
                 variant="outlined"
-                onClick={() => onViewDetailsClicked(workout.id)}
+                onClick={() => onViewDetailsClicked(workout._id)}
               >
                 View Details
               </Button>
               <Button
                 color="error"
-                onClick={() => onDeleteWorkoutBtn(workout.id)}
+                onClick={() => onDeleteWorkoutBtn(workout._id)}
               >
                 <DeleteIcon></DeleteIcon>
               </Button>
-              <Button onClick={() => onEditWorkoutBtn(workout.id)}>
+              <Button onClick={() => onEditWorkoutBtn(workout._id)}>
                 <EditIcon></EditIcon>
               </Button>
             </ListItem>
           ))}
         </List>
       )}
-      <Button onClick={() => addStamWorkout()}>Add stam workouts</Button>
+
       <Button
         style={{ minWidth: '100%' }}
         variant="outlined"
@@ -142,9 +144,11 @@ const Workouts = () => {
         Add Workout
       </Button>
       <br />
-      <Button variant="outlined" color="primary" onClick={() => refresh()}>
-        refresh
-      </Button>
+      <br />
+      <br />
+      <br />
+      <br />
+      <Button onClick={() => addStamWorkout()}>Add stam workouts</Button>
     </Container>
   );
 };

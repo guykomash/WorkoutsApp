@@ -1,10 +1,18 @@
 import { React, useState } from 'react';
-import { Grid, Typography, TextField, Button, Container, Paper } from '@mui/material';
-import axios from 'axios';
+import {
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  Container,
+  Paper,
+} from '@mui/material';
+import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useNavigate } from 'react-router-dom';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useAuth from '../hooks/useAuth';
 
 const AddWorkout = () => {
   // Add Workout form
@@ -15,8 +23,7 @@ const AddWorkout = () => {
     { id: JSON.stringify(eId) },
   ]);
 
-  // axios.defaults.withCredentials = true;
-  const baseURL = 'http://localhost:3080';
+  const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
 
   const sumbitWorkout = () => {
@@ -47,32 +54,22 @@ const AddWorkout = () => {
         reps: exercise.reps,
       }));
 
-      postWorkout(/*newUser,*/ newTitle, postExercises);
-      // setNewUser('');
+      postWorkout(newTitle, postExercises);
       setNewTitle('');
       setNewExercises([{}]);
       navigate('/workouts');
     }
   };
 
-  const postWorkout = (/*user,*/ title, exercises) => {
-    axios
-      .post(
-        `${baseURL}/workouts/add-workout`,
-        {
-          workout: {
-            title: title,
-            user: 'Guy Komash',
-            exercises: exercises,
-          },
-        }
-        // {
-        //   headers: {
-        //     'content-type': 'application/x-www-form-urlencoded',
-        //   },
-        // }
-      )
-      .then((res) => console.log(res))
+  const postWorkout = (title, exercises) => {
+    axiosPrivate
+      .post(`/workouts/add-workout`, {
+        workout: {
+          title: title,
+          exercises: exercises,
+        },
+      })
+      .then()
       .catch((error) => console.error());
   };
 

@@ -10,8 +10,6 @@ const Home = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Home Page
         </Typography>
-
-        <Users />
       </Grid>
     </Container>
   );

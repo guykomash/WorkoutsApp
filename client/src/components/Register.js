@@ -25,8 +25,10 @@ const Register = () => {
   const handleRegisterBtn = () => {
     if (!user || !pwd) return alert('empty fields');
     const onlyLettersAndSpaces = (str) => /^[A-Za-z\s]*$/.test(str);
-    if (onlyLettersAndSpaces(firstName) || onlyLettersAndSpaces(lastName))
-      alert('names must contain only letters or spaces.');
+    if (!onlyLettersAndSpaces(firstName) || !onlyLettersAndSpaces(lastName))
+      return alert('names must contain only letters or spaces.');
+    setFirstName((prev) => formatName(prev));
+    setLastName((prev) => formatName(prev));
     axios
       .post(
         `/register`,
@@ -49,6 +51,7 @@ const Register = () => {
   };
 
   const formatName = (name) => {
+    //TODO . handle edge cases : start with space!
     if (!name || name === '') return name;
     if (name.length == 1) return name.toUpperCase();
     else {

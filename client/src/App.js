@@ -16,14 +16,16 @@ import Unauthorized from './components/Unauthorized';
 import RequireAuth from './components/RequireAuth';
 import Welcome from './components/Welcome';
 import ExploreWorkouts from './components/ExploreWorkouts';
+import Account from './components/Account';
+import AdminManage from './components/AdminManage';
 
-const ROLES = {
+export const ROLES = {
   User: 1111,
   Editor: 2222,
   Admin: 3333,
 };
 
-const NAV = {
+export const NAV = {
   Welcome: '/welcome',
   Login: '/login',
 };
@@ -61,7 +63,17 @@ const App = () => {
           <Route path="/sessions/new-session" element={<NewSession />} />
           <Route path="/timer" element={<Timer />} />
           <Route path="/explore" element={<ExploreWorkouts />} />
+          <Route path="/myaccount" element={<Account />} />
         </Route>
+
+        <Route
+          element={
+            <RequireAuth logoutNavTo={NAV.Login} allowedRoles={[ROLES.Admin]} />
+          }
+        >
+          <Route path="admin/manage" element={<AdminManage />} />
+        </Route>
+
         <Route path="/*" element={<PageNotFound />} />
       </Route>
     </Routes>

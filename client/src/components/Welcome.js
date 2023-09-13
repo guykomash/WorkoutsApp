@@ -7,9 +7,6 @@ const Welcome = () => {
   return (
     <Container maxWidth="sm">
       <br />
-      {/* <Typography variant="h4" align="center" gutterBottom>
-        Welcome
-      </Typography> */}
       <br />
       <Typography variant="h6" align="center" gutterBottom>
         Welcome to WORKOUTS! <br /> Please log in to use the app.

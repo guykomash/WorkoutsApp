@@ -40,10 +40,8 @@ const handleLogin = async (req, res) => {
 
     //updating DB users: update the logged in user with his refreshToken
 
-    await User.updateOne(
-      { username: foundUser.username },
-      { refreshToken: refreshToken }
-    ).exec();
+    foundUser.refreshToken = refreshToken;
+    await foundUser.save();
 
     res
       .cookie('jwt', refreshToken, {
@@ -52,12 +50,12 @@ const handleLogin = async (req, res) => {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       })
-      .cookie('userId', foundUser._id)
+      .cookie('userId', foundUser._id) // check to cancel.
       .send({
         userId: foundUser._id,
         userName: foundUser.username,
-        userFirstName: foundUser.firstname,
-        userLastName: foundUser.lastname,
+        userFirstName: foundUser.name.firstname,
+        userLastName: foundUser.name.lastname,
         accessToken,
       });
   } else {

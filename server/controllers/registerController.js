@@ -1,5 +1,5 @@
 const User = require('../models/User');
-
+const { format } = require('date-fns');
 // hash passwords
 const bcrypt = require('bcrypt');
 
@@ -22,8 +22,11 @@ const handleNewUser = async (req, res) => {
     const result = User.create({
       username: user,
       password: hashedPwd,
-      firstname: firstName,
-      lastname: lastName,
+      name: {
+        firstname: firstName,
+        lastname: lastName,
+      },
+      created: format(new Date(), 'dd/MM/YYY'),
     });
 
     console.log(result);

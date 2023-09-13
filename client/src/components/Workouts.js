@@ -19,7 +19,7 @@ import useRefreshToken from '../hooks/useRefreshToken';
 
 const Workouts = () => {
   const navigate = useNavigate();
-  const [workouts, setWorkouts] = useState([]);
+  const [workouts, setWorkouts] = useState(null);
   const axiosPrivate = useAxiosPrivate();
   const { auth } = useAuth();
 
@@ -55,7 +55,6 @@ const Workouts = () => {
   };
 
   const onEditWorkoutBtn = (workoutId) => {
-    console.log('edit ' + workoutId);
     navigate(`/workouts/edit/${workoutId}`);
   };
   const postWorkout = (title, exercises) => {
@@ -78,10 +77,10 @@ const Workouts = () => {
     const stam = {
       title: 'Stam Workout',
       exercises: [
-        { id: '1', title: 'Bench Press', sets: '3', reps: '8' },
-        { id: '2', title: 'Lat Pulldown', sets: '3', reps: '10' },
-        { id: '3', title: 'Squat', sets: '5', reps: '20' },
-        { id: '4', title: 'Lateral Rises', sets: '4', reps: '8' },
+        { title: 'Bench Press', sets: '3', reps: '8' },
+        { title: 'Lat Pulldown', sets: '3', reps: '10' },
+        { title: 'Squat', sets: '5', reps: '20' },
+        { title: 'Lateral Rises', sets: '4', reps: '8' },
       ],
     };
     postWorkout(stam.title, stam.exercises);
@@ -94,7 +93,11 @@ const Workouts = () => {
         Workouts
       </Typography>
 
-      {workouts.length === 0 ? (
+      {!workouts ? (
+        <Typography variant="body1" align="center">
+          Loading workout details...
+        </Typography>
+      ) : workouts.length === 0 ? (
         <Typography variant="body1" align="center">
           No workouts available.
         </Typography>
@@ -104,7 +107,7 @@ const Workouts = () => {
             <ListItem key={workout._id} disablePadding>
               <ListItemText
                 primary={workout.title}
-                secondary={`${auth.firstName} ${auth.lastName}`}
+                secondary={`${workout.author.firstname} ${workout.author.lastname}`}
               />
               <Button
                 variant="outlined"

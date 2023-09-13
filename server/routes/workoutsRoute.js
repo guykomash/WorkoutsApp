@@ -11,8 +11,9 @@ router
 
 router
   .route('/:workoutId')
-  .get(workoutsController.fetchById)
-  .delete(workoutsController.deleteById);
+  .get(verifyRoles(ROLES_LIST.User), workoutsController.fetchById)
+  .delete(verifyRoles(ROLES_LIST.User), workoutsController.deleteById)
+  .put(verifyRoles(ROLES_LIST.User), workoutsController.updateById);
 
 router
   .route('/add-workout')

@@ -18,12 +18,11 @@ const handleLogout = async (req, res) => {
   }
 
   // delete refreshToken in DB , clearCookie
-  await User.updateOne(
-    { refreshToken: refreshToken },
-    { refreshToken: '' }
-  ).exec();
+  foundUser.refreshToken = '';
+  await foundUser.save();
 
   //secure:true = > only serves on https => add in production
+
   res
     .clearCookie('jwt', {
       httpOnly: true,

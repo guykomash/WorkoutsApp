@@ -36,7 +36,7 @@ const Login = () => {
       const userName = res?.data?.userName;
       const firstName = res?.data?.userFirstName;
       const lastName = res?.data?.userLastName;
-      console.log(res.data);
+
       setAuth({ userId, userName, firstName, lastName, accessToken });
       setUser('');
       setPwd('');

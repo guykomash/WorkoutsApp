@@ -6,6 +6,16 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  name: {
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
+      type: String,
+      required: true,
+    },
+  },
   roles: {
     User: {
       type: Number,
@@ -19,11 +29,7 @@ const userSchema = new Schema({
     required: true,
   },
   refreshToken: String,
-  firstname: {
-    type: String,
-    required: true,
-  },
-  lastname: {
+  created: {
     type: String,
     required: true,
   },

@@ -26,9 +26,9 @@ app.use('/refresh', require('./routes/refreshRoute'));
 app.use('/logout', require('./routes/logoutRoute'));
 
 app.use(verifyJWT); // from now on (waterfall...)
+app.use('/myaccount', require('./routes/accountRoute'));
 app.use('/workouts', require('./routes/workoutsRoute'));
 app.use('/explore', require('./routes/exploreRoute'));
-
 
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');

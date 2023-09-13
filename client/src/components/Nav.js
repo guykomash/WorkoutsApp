@@ -24,6 +24,7 @@ function Nav() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const logout = useLogout();
 
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -45,6 +46,10 @@ function Nav() {
     navigate('/');
   };
 
+  const handleAccountBtn = () => {
+    navigate('/myaccount');
+  };
+
   const renderLoggedInNav = () => {
     const pages = [
       { name: 'Home', path: '/' },
@@ -54,12 +59,8 @@ function Nav() {
       { name: 'Explore', path: '/explore' },
     ];
 
-    const printOnClick = () => {
-      console.log('menuOnClick');
-    };
-
     const settings = [
-      { name: 'Profile', onClick: printOnClick },
+      { name: 'Account', onClick: handleAccountBtn },
       { name: 'Logout', onClick: handleLogoutBtn },
     ];
 

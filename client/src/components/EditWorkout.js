@@ -40,31 +40,21 @@ const EditWorkout = () => {
       .get(`/workouts/${workoutId}`)
       .then((res) => {
         if (res.data.workout) {
-          const id = res?.data?.workout?.id;
-          const title = res?.data?.workout?.title || [];
+          const user_id = res?.data?.workout?.user_id;
+          const title = res?.data?.workout?.title || '';
           const exercises = res?.data?.workout?.exercises || [];
-          setWorkout({ title, exercises });
+          setWorkout({ user_id, title, exercises });
         } else navigate('/404');
       })
       .catch((error) => console.error(error));
   };
 
   const updateWorkout = (workout) => {
-    console.log('updatedWorkout');
     axiosPrivate
-      .post(
-        `/workouts/${workoutId}`,
-        {
-          workout,
-        },
-        {
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded',
-          },
-        }
-      )
-      .then()
-      .catch((error) => console.error());
+      .put(`/workouts/${workoutId}`, {
+        workout: workout,
+      })
+      .catch((error) => console.error(error));
   };
 
   useEffect(() => {
@@ -73,7 +63,6 @@ const EditWorkout = () => {
 
   const onWorkoutsBtn = () => {
     navigate('/workouts');
-    console.log(workout);
   };
 
   const handleTitleChange = (title) => {
@@ -88,7 +77,7 @@ const EditWorkout = () => {
   };
   const handleExerciseDelete = (id) => {
     if (workout.exercises.length > 1) {
-      const nextExercises = workout.exercises.filter((e) => e.id != id);
+      const nextExercises = workout.exercises.filter((e) => e._id != id);
       setWorkout((prev) => {
         return { ...prev, exercises: nextExercises };
       });
@@ -99,20 +88,19 @@ const EditWorkout = () => {
     setWorkout((prev) => {
       return {
         ...prev,
-        exercises: prev.exercises.map((e, i) =>
-          e.id === id ? { ...e, title: title } : e
+        exercises: prev.exercises.map((e) =>
+          e._id === id ? { ...e, title: title } : e
         ),
       };
     });
   };
 
   const handleExerciseSetsChange = (sets, id) => {
-    console.log('here');
     setWorkout((prev) => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e.id === id ? { ...e, sets: sets } : e
+          e._id === id ? { ...e, sets: sets } : e
         ),
       };
     });
@@ -123,7 +111,7 @@ const EditWorkout = () => {
       return {
         ...prev,
         exercises: prev.exercises.map((e, i) =>
-          e.id === id ? { ...e, reps: reps } : e
+          e._id === id ? { ...e, reps: reps } : e
         ),
       };
     });
@@ -133,25 +121,46 @@ const EditWorkout = () => {
     setWorkout((prev) => {
       return {
         ...prev,
-        exercises: [...prev.exercises, { id: JSON.stringify(uuidv4()) }],
+        exercises: [...prev.exercises, { _id: JSON.stringify(uuidv4()) }],
       };
     });
   };
-
+  const checkValidForm = () => {
+    let isValid = true;
+    if (!workout.title || !workout.exercises.length) {
+      return (isValid = false);
+    } else {
+      workout.exercises.forEach((e) => {
+        if (
+          !e.title ||
+          e.title === '' ||
+          !e.sets ||
+          e.sets === '' ||
+          !e.reps ||
+          e.reps === ''
+        ) {
+          return (isValid = false);
+        }
+      });
+    }
+    return isValid;
+  };
   const handleUpdateWorkout = () => {
-    const formattedExercises = workout.exercises.map((e, index) => {
-      return { ...e, id: JSON.stringify(index + 1) };
+    if (!checkValidForm()) return alert('one or more empty fields');
+
+    // remove ids from exercises. (worst case -> there all uuid)
+    const formattedExercises = workout.exercises.map((e) => {
+      return { title: e.title, sets: e.sets, reps: e.reps };
     });
 
     const formattedWorkout = {
+      user_id: workout.user_id,
       title: workout.title,
       exercises: formattedExercises,
     };
 
-    console.log(formattedWorkout);
-    //updateWorkout HTTP REQUREST! , than navigate /workouts.
-    // updateWorkout(formattedWorkout);
-    // navigate('/workouts');
+    updateWorkout(formattedWorkout);
+    navigate('/workouts');
   };
   return (
     <Container maxWidth="sm">
@@ -172,46 +181,46 @@ const EditWorkout = () => {
           />
           {workout.exercises &&
             workout.exercises.map((exercise, index) => (
-              <Grid key={exercise.id}>
+              <Grid key={exercise._id}>
                 <Typography
                   variant="body"
                   sx={{ fontSize: 18, fontStyle: 'italic' }}
                 >{`Exercise ${index + 1}`}</Typography>
                 <Button
                   color="error"
-                  onClick={() => handleExerciseDelete(exercise.id)}
+                  onClick={() => handleExerciseDelete(exercise._id)}
                 >
                   <DeleteIcon></DeleteIcon>
                 </Button>
                 <TextField
-                  id={exercise.id}
+                  id={exercise._id}
                   label="Title"
                   value={exercise.title}
                   variant="filled"
                   fullWidth
                   margin="normal"
                   onChange={(e) =>
-                    handleExerciseTitleChange(e.target.value, exercise.id)
+                    handleExerciseTitleChange(e.target.value, exercise._id)
                   }
                 />
                 <TextField
-                  id={exercise.id}
+                  id={exercise._id}
                   label="Sets"
                   value={exercise.sets}
                   margin="normal"
                   variant="filled"
                   onChange={(e) =>
-                    handleExerciseSetsChange(e.target.value, exercise.id)
+                    handleExerciseSetsChange(e.target.value, exercise._id)
                   }
                 />
                 <TextField
-                  id={exercise.id}
+                  id={exercise._id}
                   label="Reps"
                   margin="normal"
                   value={exercise.reps}
                   variant="filled"
                   onChange={(e) =>
-                    handleExerciseRepsChange(e.target.value, exercise.id)
+                    handleExerciseRepsChange(e.target.value, exercise._id)
                   }
                 />
 
@@ -232,6 +241,7 @@ const EditWorkout = () => {
       </Paper>
       <br />
       <Button
+        disabled={!workout}
         fullWidth
         variant="outlined"
         color="primary"

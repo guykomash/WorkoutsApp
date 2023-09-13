@@ -29,26 +29,24 @@ const AddWorkout = () => {
   const sumbitWorkout = () => {
     let isValid = true;
 
-    if (/*!newUser || */ !newTitle) {
-      alert('please enter name and title');
+    if (!newTitle) {
+      alert('title missing');
       isValid = false;
     }
-
-    if (!newExercises) {
-      alert('please enter at least one exercise');
+    if (newExercises) {
+      newExercises.forEach((exercise) => {
+        if (!exercise.title || !exercise.sets || !exercise.reps) {
+          alert('cannot submit an empty exercise.');
+          isValid = false;
+        }
+      });
+    } else {
+      alert('exercises missing');
       isValid = false;
     }
-
-    newExercises.forEach((exercise) => {
-      if (!exercise.title || !exercise.sets || !exercise.reps) {
-        alert('cannot submit an empty exercise.');
-        isValid = false;
-      }
-    });
 
     if (isValid) {
       const postExercises = newExercises.map((exercise) => ({
-        id: exercise.id,
         title: exercise.title,
         sets: exercise.sets,
         reps: exercise.reps,

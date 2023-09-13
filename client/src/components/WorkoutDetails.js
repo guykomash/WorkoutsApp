@@ -32,12 +32,15 @@ const WorkoutDetails = () => {
     navigate(-1);
   };
 
-  const [workout, setWorkout] = useState([]);
+  const [workout, setWorkout] = useState(null);
 
   const getWorkout = () => {
     axiosPrivate
       .get(`/workouts/${workoutId}`)
-      .then((res) => setWorkout(res.data.workout))
+      .then((res) => {
+        setWorkout(res.data.workout);
+      })
+
       .catch((error) => console.error(error));
   };
 
@@ -62,16 +65,16 @@ const WorkoutDetails = () => {
           <TableBody>
             {exercises.map((exercise) => (
               <TableRow
-                key={exercise.title}
+                key={`exercise-${exercise._id}-row`}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <TableCell key={`exercise-${exercise.id}-title`}>
+                <TableCell key={`exercise-${exercise._id}-title`}>
                   {exercise.title}
                 </TableCell>
-                <TableCell key={`exercise-${exercise.id}-sets`} align="right">
+                <TableCell key={`exercise-${exercise._id}-sets`} align="right">
                   {exercise.sets}
                 </TableCell>
-                <TableCell key={`exercise-${exercise.id}-reps`} align="right">
+                <TableCell key={`exercise-${exercise._id}-reps`} align="right">
                   {exercise.reps}
                 </TableCell>
               </TableRow>
@@ -85,12 +88,7 @@ const WorkoutDetails = () => {
   return (
     <Container maxWidth="sm">
       <br />
-      <Typography
-        variant="h4"
-        align="center"
-        gutterBottom
-        data-testid="bookDetails-title"
-      >
+      <Typography variant="h4" align="center" gutterBottom>
         Workout Details
       </Typography>
       {workout ? (
@@ -111,23 +109,14 @@ const WorkoutDetails = () => {
                 padding={0.5}
                 variant="body1"
                 sx={{ fontStyle: 'italic', color: 'green' }}
-                data-testid={`workoutDetails-userContent-${workout.id}`}
               >
-                {workout.user}
+                {`${workout.author.firstname} ${workout.author.lastname}`}
               </Typography>
             </Grid>
           </Grid>
           <Grid item xs={12}>
-            <Typography
-              variant="h6"
-              data-testid={`workoutDetails-exercises-${workout.id}`}
-            ></Typography>
-            <List
-              variant="body1"
-              data-testid={`workoutDetails-exercisesContent-${workout.id}`}
-            >
-              {renderExercises(workout.exercises)}
-            </List>
+            <Typography variant="h6"></Typography>
+            <List variant="body1">{renderExercises(workout.exercises)}</List>
           </Grid>
           <Grid
             item
@@ -135,19 +124,10 @@ const WorkoutDetails = () => {
             align="left"
             sx={{ fontStyle: 'italic', fontSize: 14, color: 'blue' }}
           >
-            <Typography
-              display={'inline'}
-              variant="body2"
-              data-testid={`workoutDetails-publicationYear-${workout.id}`}
-            >
+            <Typography display={'inline'} variant="body2">
               Last Updated
             </Typography>
-            <Typography
-              display={'inline'}
-              variant="body2"
-              padding={0.5}
-              data-testid={`workoutDetails-lastUpdatedContent-${workout.id}`}
-            >
+            <Typography display={'inline'} variant="body2" padding={0.5}>
               {workout.lastUpdated}
             </Typography>
           </Grid>
@@ -163,7 +143,6 @@ const WorkoutDetails = () => {
         variant="contained"
         color="primary"
         onClick={onWorkoutsBtn}
-        data-testid="filters-WorkoutsBtn"
       >
         go Back
       </Button>

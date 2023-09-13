@@ -13,8 +13,8 @@ const handleRefreshToken = async (req, res) => {
   const refreshToken = cookies.jwt;
   // console.log(refreshToken);
 
-  const foundUser = await User.findOne({ refreshToken: refreshToken }).exec();
-  // const foundUser = usersDB.users.find((u) => u.refreshToken === refreshToken);
+  const foundUser = await User.findOne({ refreshToken }).exec();
+
   if (!foundUser) return res.sendStatus(403); // 403 = foribdden
 
   // evaluate jwt
@@ -23,7 +23,7 @@ const handleRefreshToken = async (req, res) => {
       return res.sendStatus(403);
     const roles = Object.values(foundUser.roles);
     const accessToken = jwt.sign(
-      { UserInfo: { username: decoded.username, roles: roles } },
+      { UserInfo: { userman: decoded.username, roles: roles } },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: '30s' }
     );

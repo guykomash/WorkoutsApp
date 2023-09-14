@@ -2,15 +2,31 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-
+import FitnessIcon from '@mui/icons-material/FitnessCenter';
+import MenuIcon from '@mui/icons-material/Menu';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { React } from 'react';
+
+import { React, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
 const AdminNav = () => {
+  const [anchorElNav, setAnchorElNav] = useState(null);
+
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
   const pages = [{ name: 'Manage', path: '/admin/manage' }];
   return (
     <AppBar position="static" sx={{ backgroundColor: '#d3d3d3' }}>
@@ -28,9 +44,50 @@ const AdminNav = () => {
               textDecoration: 'none',
             }}
           >
-            ADMIN BAR
+            ADMIN BAR large
           </Typography>
-
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="black"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+              }}
+            >
+              {pages.map((page) => (
+                <MenuItem
+                  component={Link}
+                  to={page.path}
+                  key={page.name}
+                  onClick={handleCloseNavMenu}
+                  href={page.path}
+                >
+                  <Typography textAlign="center">{page.name}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
           <Typography
             noWrap
             sx={{

@@ -37,14 +37,14 @@ const fetchAllUsers = async (req, res) => {
   // request OK.
   const users = await User.find().exec();
   if (!users) {
-    return res.status(204).send({ message: 'No workouts found' });
+    return res.status(204).send({ message: 'No users found' });
   } else {
-    return res.status(200).send({ user }).end();
+    return res.status(200).send({ users }).end();
   }
 };
 
 const deleteUserById = async (req, res) => {
-  console.log('deleteUser');
+  console.log('deleteUserById');
   const userId = req?.cookies?.userId;
   if (!userId)
     return res.status(500).json({ message: 'no userId found in request' });
@@ -59,8 +59,16 @@ const deleteUserById = async (req, res) => {
   }
 
   //request OK.
-  const foundUser = await User.findById(deleteUserId);
-  if (!foundUser) return;
+  const foundUser = await User.findOneAndDelete({
+    _id: deleteUserId,
+  }).exec();
+  if (!foundUser)
+    return res
+      .status(400)
+      .json({ message: 'User was not found - Bad ID' })
+      .send();
+
+  return fetchAllUsers(req, res);
 };
 
-module.exports = { getAccountDataByUser, fetchAllUsers };
+module.exports = { getAccountDataByUser, fetchAllUsers, deleteUserById };

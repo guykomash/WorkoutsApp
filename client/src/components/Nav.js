@@ -24,7 +24,6 @@ function Nav() {
   const [anchorElUser, setAnchorElUser] = useState(null);
   const logout = useLogout();
 
-
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -35,7 +34,6 @@ function Nav() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
@@ -93,6 +91,7 @@ function Nav() {
               WORKOUTS
             </Typography>
 
+            {/*small menu */}
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
@@ -178,7 +177,6 @@ function Nav() {
                 </Button>
               ))}
             </Box>
-
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <Button

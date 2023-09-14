@@ -29,7 +29,7 @@ app.use(verifyJWT); // from now on (waterfall...)
 app.use('/myaccount', require('./routes/accountRoute'));
 app.use('/workouts', require('./routes/workoutsRoute'));
 app.use('/explore', require('./routes/exploreRoute'));
-
+app.use('/admin', require('./routes/adminRoute'));
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

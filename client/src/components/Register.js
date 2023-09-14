@@ -51,18 +51,23 @@ const Register = () => {
   };
 
   const formatName = (name) => {
-    //TODO . handle edge cases : start with space!
+    //trim() removes any wrapping spaces in name.
+
     if (!name || name === '') return name;
     if (name.length == 1) return name.toUpperCase();
     else {
-      const names = name.split(' ');
+      const names = name.trim().split(' ');
+      console.log(names);
       let formattedName = '';
       for (const n of names) {
-        const first = n[0].toUpperCase();
-        const rest = n.substring(1).toLowerCase();
-        formattedName = `${formattedName}${first}${rest} `;
+        if (n != '') {
+          // skip extra spaces.
+          const first = n[0].toUpperCase();
+          const rest = n.substring(1).toLowerCase();
+          formattedName = `${formattedName}${first}${rest} `;
+        }
       }
-      return formattedName.split(0, -1)[0];
+      return formattedName.trim();
     }
   };
 

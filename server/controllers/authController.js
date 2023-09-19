@@ -56,6 +56,7 @@ const handleLogin = async (req, res) => {
         userName: foundUser.username,
         userFirstName: foundUser.name.firstname,
         userLastName: foundUser.name.lastname,
+        created: foundUser.created,
         accessToken,
       });
   } else {

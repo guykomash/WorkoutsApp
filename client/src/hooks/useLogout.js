@@ -1,5 +1,5 @@
 import axios from '../api/axios';
-import useAuth from './useAuth';
+import { useAuth } from '../contexts/AuthProvider';
 
 const useLogout = () => {
   const { setAuth } = useAuth();
@@ -12,7 +12,7 @@ const useLogout = () => {
       console.log(response.data);
       setAuth({});
     } catch (err) {
-      console.err(err);
+      console.error(err);
       setAuth({});
     }
   };

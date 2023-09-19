@@ -2,18 +2,15 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import FitnessIcon from '@mui/icons-material/FitnessCenter';
 import MenuIcon from '@mui/icons-material/Menu';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
-import { React, useState } from 'react';
 
+import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const AdminNav = () => {
@@ -27,7 +24,7 @@ const AdminNav = () => {
     setAnchorElNav(null);
   };
 
-  const pages = [{ name: 'Manage', path: '/admin/manage' }];
+  const pages = [{ name: 'Control Panel', path: '/admin/control-panel' }];
   return (
     <AppBar position="static" sx={{ backgroundColor: '#d3d3d3' }}>
       <Container maxWidth="xl">
@@ -44,7 +41,7 @@ const AdminNav = () => {
               textDecoration: 'none',
             }}
           >
-            ADMIN BAR large
+            ADMIN BAR
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton

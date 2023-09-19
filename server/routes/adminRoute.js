@@ -9,10 +9,15 @@ router
   .route('/users/get-users')
   .get(verifyRoles(ROLES_LIST.Admin), usersController.fetchAllUsers);
 
-router.delete(
-  '/users/:userId',
+router
+  .route('/users/:userId')
+  .get(verifyRoles(ROLES_LIST.Admin), usersController.fetchUserById)
+  .delete(verifyRoles(ROLES_LIST.Admin), usersController.deleteUserById);
+
+router.put(
+  '/users/update-roles-:userId',
   verifyRoles(ROLES_LIST.Admin),
-  usersController.deleteUserById
+  usersController.updateRolesById
 );
 
 module.exports = router;

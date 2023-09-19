@@ -1,19 +1,12 @@
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
   Container,
   Grid,
   Paper,
-  // TextField,
   Typography,
-  Card,
-  CardContent,
-  Box,
   List,
-  ListItem,
-  ListItemText,
   TableContainer,
   Table,
   TableHead,
@@ -21,32 +14,22 @@ import {
   TableBody,
   TableCell,
 } from '@mui/material';
+import { useWorkouts } from '../../contexts/WorkoutsProvider';
 
 const WorkoutDetails = () => {
-  const axiosPrivate = useAxiosPrivate();
-
   const { workoutId } = useParams();
+  const { getUserWorkoutById, getSavedWorkoutById } = useWorkouts().user;
+  const { getWorkoutById } = useWorkouts().global;
+  const workout =
+    getUserWorkoutById(workoutId) ||
+    getSavedWorkoutById(workoutId) ||
+    getWorkoutById(workoutId);
+
   const navigate = useNavigate();
 
   const onWorkoutsBtn = () => {
     navigate(-1);
   };
-
-  const [workout, setWorkout] = useState(null);
-
-  const getWorkout = () => {
-    axiosPrivate
-      .get(`/workouts/${workoutId}`)
-      .then((res) => {
-        setWorkout(res.data.workout);
-      })
-
-      .catch((error) => console.error(error));
-  };
-
-  useEffect(() => {
-    getWorkout();
-  }, []);
 
   const renderExercises = (exercises) => {
     if (!exercises) return;
@@ -54,20 +37,26 @@ const WorkoutDetails = () => {
       'No exercises'
     ) : (
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 300 }} aria-label="simple table">
+        <Table aria-label="simple table">
           <TableHead>
             <TableRow>
+              <TableCell>No.</TableCell>
               <TableCell>Exercise</TableCell>
               <TableCell align="right">Sets</TableCell>
               <TableCell align="right">Reps</TableCell>
+              <TableCell align="right">Distance</TableCell>
+              <TableCell align="right">Duration</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {exercises.map((exercise) => (
+            {exercises.map((exercise, index) => (
               <TableRow
                 key={`exercise-${exercise._id}-row`}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
+                <TableCell key={`exercise-${exercise._id}-index`}>
+                  {index + 1}
+                </TableCell>
                 <TableCell key={`exercise-${exercise._id}-title`}>
                   {exercise.title}
                 </TableCell>
@@ -76,6 +65,18 @@ const WorkoutDetails = () => {
                 </TableCell>
                 <TableCell key={`exercise-${exercise._id}-reps`} align="right">
                   {exercise.reps}
+                </TableCell>
+                <TableCell
+                  key={`exercise-${exercise._id}-distance`}
+                  align="right"
+                >
+                  {exercise.distance}
+                </TableCell>
+                <TableCell
+                  key={`exercise-${exercise._id}-duration`}
+                  align="right"
+                >
+                  {exercise.duration}
                 </TableCell>
               </TableRow>
             ))}
@@ -91,12 +92,24 @@ const WorkoutDetails = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Workout Details
       </Typography>
-      {workout ? (
-        <Paper sx={{ p: 2 }}>
+      {!workout ? (
+        <Typography variant="body1" align="center">
+          Loading workout details...
+        </Typography>
+      ) : workout.length === 0 ? (
+        <Typography variant="body1" align="center">
+          No workout found.
+        </Typography>
+      ) : (
+        <Paper elevation={4} sx={{ p: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h6"></Typography>
-              <Typography variant="h5" align="center">
+              <Typography
+                variant="h5"
+                sx={{ fontWeight: '700', color: '#3f50b5' }}
+                align="center"
+              >
                 {workout.title}
               </Typography>
             </Grid>
@@ -132,10 +145,6 @@ const WorkoutDetails = () => {
             </Typography>
           </Grid>
         </Paper>
-      ) : (
-        <Typography variant="body1" align="center">
-          Loading workout details...
-        </Typography>
       )}
       <br />
       <Button

@@ -12,9 +12,13 @@ const workoutSchema = new Schema({
   lastUpdated: { type: String, required: true },
   exercises: [
     {
+      exercise_id: ObjectId,
       title: { type: String, required: true },
-      sets: { type: String, required: true },
-      reps: { type: String, required: true },
+      type: { type: String, required: true },
+      sets: String,
+      reps: String,
+      duration: String,
+      distance: String,
     },
   ],
 });

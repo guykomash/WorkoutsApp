@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const ROLES_LIST = require('../config/roles_list');
 
 const getAccountDataByUser = async (req, res) => {
   console.log('getAccountDataByUser');
@@ -43,8 +44,23 @@ const fetchAllUsers = async (req, res) => {
   }
 };
 
+const fetchUserById = async (req, res) => {
+  console.log('fetchUserById');
+  const userId = req?.cookies?.userId;
+  if (!userId)
+    return res.status(500).json({ message: 'no userId found in request' });
+  // request OK.
+  const user = await User.findById(userId).exec();
+  if (!user) {
+    return res.status(204).send({ message: 'No user found' });
+  } else {
+    return res.status(200).send({ user }).end();
+  }
+};
+
 const deleteUserById = async (req, res) => {
   console.log('deleteUserById');
+
   const userId = req?.cookies?.userId;
   if (!userId)
     return res.status(500).json({ message: 'no userId found in request' });
@@ -57,18 +73,77 @@ const deleteUserById = async (req, res) => {
     console.log('User cannot delete own account.');
     return res.status(400).send({ message: 'user cannot delete own account' });
   }
+  console.log(`delete ${deleteUserId}`);
 
   //request OK.
-  const foundUser = await User.findOneAndDelete({
-    _id: deleteUserId,
-  }).exec();
-  if (!foundUser)
-    return res
-      .status(400)
-      .json({ message: 'User was not found - Bad ID' })
-      .send();
+  try {
+    const foundUser = await User.findByIdAndDelete(deleteUserId).exec();
+    if (!foundUser)
+      return res.status(400).send({ message: 'User was not found - Bad ID' });
+  } catch (err) {
+    console.log(err);
+  }
 
-  return fetchAllUsers(req, res);
+  // return all users for re-rendering
+  const users = await User.find().exec();
+  if (!users) {
+    return res.status(204).send({ message: 'No users found' });
+  } else {
+    return res.status(200).send({ users }).end();
+  }
 };
 
-module.exports = { getAccountDataByUser, fetchAllUsers, deleteUserById };
+const updateRolesById = async (req, res) => {
+  console.log('updateRolesById');
+  const userId = req?.cookies?.userId;
+  if (!userId)
+    return res.status(500).json({ message: 'no userId found in request' });
+
+  const updateUserId = req?.params?.userId;
+  console.log(updateUserId);
+
+  if (!updateUserId)
+    return res.status(400).send({ message: 'bad update user id' });
+
+  const newRoles = req?.body?.roles;
+  if (!newRoles) return res.status(400).send({ message: 'bad roles' });
+
+  console.log(newRoles);
+  //modify roles.
+  for (let role in newRoles) {
+    if (newRoles[role] === true) newRoles[role] = ROLES_LIST[role];
+    else delete newRoles[role];
+  }
+  console.log(newRoles);
+
+  if (updateUserId === userId) {
+    console.log('User cannot modify is own roles.');
+    return res.status(400).send({ message: 'User cannot modify is own roles' });
+  }
+  console.log(`user ${updateUserId}`);
+
+  //request OK.
+  try {
+    const foundUser = await User.updateOne(
+      { _id: updateUserId },
+      {
+        roles: newRoles,
+      }
+    ).exec();
+    if (!foundUser)
+      return res.status(400).send({ message: 'User was not found - Bad ID' });
+
+    return res.status(200).send({ user: foundUser }).end();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ message: 'Server error in update roles.' });
+  }
+};
+
+module.exports = {
+  getAccountDataByUser,
+  fetchAllUsers,
+  deleteUserById,
+  updateRolesById,
+  fetchUserById,
+};

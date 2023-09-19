@@ -1,24 +1,9 @@
-import { useEffect, useState } from 'react';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { Container, Grid, Paper, Typography } from '@mui/material';
+import { useAuth } from '../contexts/AuthProvider';
 const Account = () => {
-  const axiosPrivate = useAxiosPrivate();
-  const [user, setUser] = useState(null);
+  const { auth } = useAuth();
 
-  const getUser = async () => {
-    try {
-      const response = await axiosPrivate.get(`/myaccount`);
-      console.log(response?.data?.user);
-      setUser(response?.data?.user);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  return !user ? (
+  return !auth ? (
     <Typography variant="h5" align="center" gutterBottom>
       Loading account data...
     </Typography>
@@ -44,7 +29,7 @@ const Account = () => {
               variant="h6"
               sx={{ fontStyle: 'italic', color: '#3f50b5', marginLeft: '10px' }}
             >
-              {`${user.userName}`}
+              {`${auth.userName}`}
             </Typography>
           </Grid>
           <Grid container direction="row" justifyContent="left">
@@ -60,7 +45,7 @@ const Account = () => {
                 marginLeft: '10px',
               }}
             >
-              {`${user.firstName}`}
+              {`${auth.firstName}`}
             </Typography>
           </Grid>
           <Grid container direction="row" justifyContent="left" alignItems="">
@@ -77,7 +62,7 @@ const Account = () => {
               variant="h6"
               sx={{ fontStyle: 'italic', color: '#3f50b5', marginLeft: '10px' }}
             >
-              {`${user.lastName}`}
+              {`${auth.lastName}`}
             </Typography>
           </Grid>
           <Grid container direction="row" justifyContent="left" alignItems="">
@@ -94,7 +79,7 @@ const Account = () => {
               variant="h6"
               sx={{ fontStyle: 'italic', color: '#3f50b5', marginLeft: '10px' }}
             >
-              {`${user.created}`}
+              {`${auth.created}`}
             </Typography>
           </Grid>
         </Grid>

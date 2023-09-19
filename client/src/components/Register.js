@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 
 import axios from '../api/axios';
-import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { formatName } from '../utils';
 
 const Register = () => {
   const [hasRegistered, setHasRegistered] = useState(false);
@@ -20,23 +20,21 @@ const Register = () => {
   const [lastName, setLastName] = useState('');
   const navigate = useNavigate();
 
-  const { auth } = useAuth();
-
   const handleRegisterBtn = () => {
     if (!user || !pwd) return alert('empty fields');
     const onlyLettersAndSpaces = (str) => /^[A-Za-z\s]*$/.test(str);
     if (!onlyLettersAndSpaces(firstName) || !onlyLettersAndSpaces(lastName))
       return alert('names must contain only letters or spaces.');
-    setFirstName((prev) => formatName(prev));
-    setLastName((prev) => formatName(prev));
+    const formattedFirstName = formatName(firstName);
+    const formattedLastName = formatName(lastName);
     axios
       .post(
         `/register`,
         {
           user: user,
           pwd: pwd,
-          firstName: firstName,
-          lastName: lastName,
+          firstName: formattedFirstName,
+          lastName: formattedLastName,
         },
         {
           headers: {
@@ -50,26 +48,26 @@ const Register = () => {
       .catch((err) => console.error(err));
   };
 
-  const formatName = (name) => {
-    //trim() removes any wrapping spaces in name.
+  // const formatName = (name) => {
+  //   //trim() removes any wrapping spaces in name.
 
-    if (!name || name === '') return name;
-    if (name.length == 1) return name.toUpperCase();
-    else {
-      const names = name.trim().split(' ');
-      console.log(names);
-      let formattedName = '';
-      for (const n of names) {
-        if (n != '') {
-          // skip extra spaces.
-          const first = n[0].toUpperCase();
-          const rest = n.substring(1).toLowerCase();
-          formattedName = `${formattedName}${first}${rest} `;
-        }
-      }
-      return formattedName.trim();
-    }
-  };
+  //   if (!name || name === '') return name;
+  //   if (name.length === 1) return name.toUpperCase();
+  //   else {
+  //     const names = name.trim().split(' ');
+  //     console.log(names);
+  //     let formattedName = '';
+  //     for (const n of names) {
+  //       if (n !== '') {
+  //         // skip extra spaces.
+  //         const first = n[0].toUpperCase();
+  //         const rest = n.substring(1).toLowerCase();
+  //         formattedName = `${formattedName}${first}${rest} `;
+  //       }
+  //     }
+  //     return formattedName.trim();
+  //   }
+  // };
 
   return hasRegistered ? (
     <Container maxWidth="sm">
@@ -94,6 +92,21 @@ const Register = () => {
         Welcome to WORKOUTS
       </Typography>
       <br />
+      <Button
+        size="large"
+        sx={{
+          color: 'black',
+          backgroundColor: 'gold',
+          ':hover': {
+            color: 'gold',
+            backgroundColor: '#333333',
+          },
+        }}
+        fullWidth
+        onClick={() => navigate('/login')}
+      >
+        Already a user? Click here to log in!
+      </Button>
       <Paper sx={{ p: 2 }}>
         <Grid item xs={12}>
           {/* <br /> */}

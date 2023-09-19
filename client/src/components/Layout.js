@@ -1,8 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import Nav from './Nav';
-import AdminNav from './AdminNav';
+import AdminNav from './Admin/AdminNav';
 import { ROLES } from '../App';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthProvider';
 import jwtDecode from 'jwt-decode';
 
 const Layout = () => {
@@ -11,7 +11,7 @@ const Layout = () => {
   try {
     roles = jwtDecode(auth?.accessToken)?.UserInfo?.roles;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     roles = [];
   }
 

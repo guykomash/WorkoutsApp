@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthProvider';
 import jwtDecode from 'jwt-decode';
 
 const RequireAuth = ({ logoutNavTo, allowedRoles }) => {
@@ -8,7 +8,7 @@ const RequireAuth = ({ logoutNavTo, allowedRoles }) => {
   try {
     roles = jwtDecode(auth?.accessToken)?.UserInfo?.roles;
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     roles = [];
   }
   return roles?.find((role) => allowedRoles?.includes(role)) ? (

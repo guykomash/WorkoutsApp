@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -33,6 +34,8 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  saved_workouts: [ObjectId],
+  sessions: [ObjectId],
 });
 
 module.exports = mongoose.model('User', userSchema);

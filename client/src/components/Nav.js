@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import { React, useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthProvider';
 import useLogout from '../hooks/useLogout';
 
 function Nav() {
@@ -51,7 +51,7 @@ function Nav() {
   const renderLoggedInNav = () => {
     const pages = [
       { name: 'Home', path: '/' },
-      { name: 'New Session', path: '/sessions/new-session' },
+      { name: 'Sessions', path: '/sessions' },
       { name: 'Workouts', path: '/workouts' },
       { name: 'Timer', path: '/timer' },
       { name: 'Explore', path: '/explore' },
@@ -127,7 +127,7 @@ function Nav() {
                     to={page.path}
                     key={page.name}
                     onClick={handleCloseNavMenu}
-                    href={page.path}
+                    // href={page.path}
                   >
                     <Typography textAlign="center">{page.name}</Typography>
                   </MenuItem>
@@ -229,11 +229,12 @@ function Nav() {
   };
 
   const renderLoggedOutNav = () => {
-    const pages = [
-      { name: 'Log in', path: '/login' },
-      { name: 'Register', path: '/register' },
-    ];
-    const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+    // const pages = [
+    //   { name: 'Log in', path: '/login' },
+    //   { name: 'Register', path: '/register' },
+    // ];
+    // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
     return (
       <AppBar position="static" sx={{ backgroundColor: '#333333' }}>
         <Container maxWidth="xl">
@@ -253,6 +254,7 @@ function Nav() {
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
+                justifyContent: 'center',
                 fontFamily: 'monospace',
                 fontWeight: 700,
                 letterSpacing: '.3rem',
@@ -263,7 +265,7 @@ function Nav() {
               WORKOUTS
             </Typography>
 
-            <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+            {/* <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
                 aria-label="account of current user"
@@ -303,7 +305,7 @@ function Nav() {
                   </MenuItem>
                 ))}
               </Menu>
-            </Box>
+            </Box> */}
             <FitnessIcon
               sx={{
                 display: { xs: 'flex', md: 'none' },
@@ -329,7 +331,7 @@ function Nav() {
             >
               WORKOUTS
             </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+            {/* <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {pages.map((page) => (
                 <Button
                   href={page.path}
@@ -345,7 +347,7 @@ function Nav() {
                   {page.name}
                 </Button>
               ))}
-            </Box>
+            </Box> */}
 
             {/* <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">

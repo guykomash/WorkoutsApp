@@ -11,7 +11,6 @@ export const ExerciseProvider = ({ children }) => {
   const [exercises, setExercises] = useState(null);
 
   const fetchAllExercises = async () => {
-    console.log('fetchAllExercises');
     try {
       const response = await axiosPrivate.get('/exercises');
       setExercises(response.data.exercises);

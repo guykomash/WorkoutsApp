@@ -21,9 +21,12 @@ const ExploreWorkouts = () => {
   const navigate = useNavigate();
   // const { user, global } = useWorkouts();
 
-  const { savedWorkouts, addSavedWorkout, deleteSavedWorkout } =
-    useWorkouts().user;
-  console.log(savedWorkouts);
+  const {
+    savedWorkouts,
+    addSavedWorkout,
+    deleteSavedWorkout,
+    fetchUserWorkouts,
+  } = useWorkouts().user;
 
   const {
     allWorkouts,
@@ -36,8 +39,8 @@ const ExploreWorkouts = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
+    // fetchUserWorkouts();
     fetchAllWorkouts();
-    console.log(JSON.stringify(savedWorkouts));
   }, []);
 
   useEffect(() => {
@@ -76,9 +79,26 @@ const ExploreWorkouts = () => {
   return (
     <Container maxWidth="sm" overflow="true">
       <br />
-      <Typography variant="h4" align="center" gutterBottom>
-        Explore all workouts
-      </Typography>
+      <br />
+      <br />
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '600px',
+            borderRadius: '6px',
+          }}
+        >
+          Explore all workouts
+        </Typography>
+      </Container>
+      <br />
+
       <Grid sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <SearchIcon
           fontSize="large"
@@ -123,7 +143,8 @@ const ExploreWorkouts = () => {
                   primary={workout.title}
                   secondary={`${workout.author.firstname} ${workout.author.lastname}`}
                 />
-                {savedWorkouts.find((sw) => sw._id === workout._id) ? (
+                {savedWorkouts &&
+                savedWorkouts.find((sw) => sw._id === workout._id) ? (
                   <Button
                     sx={{
                       color: 'red',
@@ -163,6 +184,8 @@ const ExploreWorkouts = () => {
           </List>
         )}
       </Paper>
+      <br />
+      <br />
     </Container>
   );
 };

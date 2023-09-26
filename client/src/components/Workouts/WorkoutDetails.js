@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Button,
@@ -14,16 +14,18 @@ import {
   TableBody,
   TableCell,
 } from '@mui/material';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+
 import { useWorkouts } from '../../contexts/WorkoutsProvider';
 
 const WorkoutDetails = () => {
   const { workoutId } = useParams();
-  const { getUserWorkoutById, getSavedWorkoutById } = useWorkouts().user;
-  const { getWorkoutById } = useWorkouts().global;
-  const workout =
-    getUserWorkoutById(workoutId) ||
-    getSavedWorkoutById(workoutId) ||
-    getWorkoutById(workoutId);
+  const { fetchWorkoutDetailsById } = useWorkouts().global;
+  const [workoutDetails, setWorkoutDetails] = useState(null);
+
+  useEffect(() => {
+    fetchWorkoutDetailsById(setWorkoutDetails, workoutId);
+  }, []);
 
   const navigate = useNavigate();
 
@@ -89,14 +91,34 @@ const WorkoutDetails = () => {
   return (
     <Container maxWidth="sm">
       <br />
-      <Typography variant="h4" align="center" gutterBottom>
-        Workout Details
-      </Typography>
-      {!workout ? (
+      <Button color="primary" onClick={onWorkoutsBtn}>
+        <KeyboardBackspaceIcon />
+        Back
+      </Button>
+      <br />
+
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '300px',
+            borderRadius: '6px',
+          }}
+        >
+          Workout Details
+        </Typography>
+        <br />
+      </Container>
+      {!workoutDetails ? (
         <Typography variant="body1" align="center">
           Loading workout details...
         </Typography>
-      ) : workout.length === 0 ? (
+      ) : workoutDetails.length === 0 ? (
         <Typography variant="body1" align="center">
           No workout found.
         </Typography>
@@ -104,32 +126,43 @@ const WorkoutDetails = () => {
         <Paper elevation={4} sx={{ p: 2 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <Typography variant="h6"></Typography>
               <Typography
                 variant="h5"
-                sx={{ fontWeight: '700', color: '#3f50b5' }}
+                sx={{ fontWeight: '800' }}
                 align="center"
               >
-                {workout.title}
+                {workoutDetails.title}
               </Typography>
             </Grid>
             <Grid item xs={12} align="center">
-              <Typography display={'inline'} variant="body1">
+              <Typography
+                display={'inline'}
+                // variant="body1"
+                sx={{ fontWeight: '700', fontSize: 16 }}
+              >
                 Created by
               </Typography>
               <Typography
                 display={'inline'}
+                margin={1}
                 padding={0.5}
                 variant="body1"
-                sx={{ fontStyle: 'italic', color: 'green' }}
+                sx={{
+                  // fontStyle: 'italic',
+                  color: '#097969',
+                  fontWeight: '700',
+                  fontSize: 16,
+                }}
               >
-                {`${workout.author.firstname} ${workout.author.lastname}`}
+                {`${workoutDetails?.author?.firstname} ${workoutDetails?.author?.lastname}`}
               </Typography>
             </Grid>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6"></Typography>
-            <List variant="body1">{renderExercises(workout.exercises)}</List>
+            <List variant="body1">
+              {renderExercises(workoutDetails.exercises)}
+            </List>
           </Grid>
           <Grid
             item
@@ -137,24 +170,26 @@ const WorkoutDetails = () => {
             align="left"
             sx={{ fontStyle: 'italic', fontSize: 14, color: 'blue' }}
           >
-            <Typography display={'inline'} variant="body2">
-              Last Updated
+            <Typography
+              display={'inline'}
+              sx={{ color: '#009C4E', fontSize: 14 }}
+            >
+              Last updated
             </Typography>
-            <Typography display={'inline'} variant="body2" padding={0.5}>
-              {workout.lastUpdated}
+            <Typography
+              display={'inline'}
+              padding={1}
+              sx={{ color: '#009C4E', fontSize: 14 }}
+            >
+              {workoutDetails.lastUpdated}
             </Typography>
           </Grid>
         </Paper>
       )}
       <br />
-      <Button
-        style={{ minWidth: '100%' }}
-        variant="contained"
-        color="primary"
-        onClick={onWorkoutsBtn}
-      >
-        go Back
-      </Button>
+      <br />
+      <br />
+      <br />
     </Container>
   );
 };

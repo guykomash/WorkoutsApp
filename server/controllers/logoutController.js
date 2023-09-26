@@ -27,6 +27,7 @@ const handleLogout = async (req, res) => {
     .clearCookie('jwt', {
       httpOnly: true,
     })
+    .clearCookie('userId')
     .sendStatus(204);
 };
 

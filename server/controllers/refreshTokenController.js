@@ -2,6 +2,7 @@ const User = require('../models/User');
 
 const jwt = require('jsonwebtoken');
 
+const jwtDecode = require('jwt-decode');
 // grab refreshToken from cookies.
 // grab user from DB by the refreshToken.
 // verify refreshToken => sign new accessToken & send to user.
@@ -19,15 +20,28 @@ const handleRefreshToken = async (req, res) => {
 
   // evaluate jwt
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-    if (err || foundUser.username !== decoded.username)
+    if (err) {
+      if (err.message === 'jwt expired') {
+        console.log('expired');
+        return res.sendStatus(401);
+      } else return res.sendStatus(403);
+    } else if (foundUser.username !== decoded.username) {
       return res.sendStatus(403);
+    }
     const roles = Object.values(foundUser.roles);
     const accessToken = jwt.sign(
-      { UserInfo: { userman: decoded.username, roles: roles } },
+      { UserInfo: { username: decoded.username, roles: roles } },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '30s' }
+      { expiresIn: '15m' }
     );
-    res.send({ accessToken });
+    res.send({
+      userId: foundUser._id,
+      userName: foundUser.username,
+      userFirstName: foundUser.name.firstname,
+      userLastName: foundUser.name.lastname,
+      created: foundUser.created,
+      accessToken,
+    });
   });
 };
 

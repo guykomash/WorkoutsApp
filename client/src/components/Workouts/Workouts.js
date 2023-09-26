@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -15,8 +15,11 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
 import DeleteBtnWithDialog from '../DeleteBtnWithDialog';
+
 import { useWorkouts } from '../../contexts/WorkoutsProvider';
+
 const Workouts = () => {
+  const { user } = useWorkouts();
   const navigate = useNavigate();
   const { userWorkouts, deleteWorkout, savedWorkouts, deleteSavedWorkout } =
     useWorkouts().user;
@@ -42,6 +45,9 @@ const Workouts = () => {
     deleteSavedWorkout(workoutId);
   };
 
+  useEffect(() => {
+    user.fetchUserWorkouts();
+  }, []);
   // //for testing.
   // const addStamWorkout = () => {
   //   const stam = {
@@ -83,23 +89,26 @@ const Workouts = () => {
       <Typography variant="h5" align="center" gutterBottom>
         My workouts
       </Typography>
-      <Button
-        style={{ minWidth: '100%' }}
-        variant="outlined"
-        color="primary"
-        sx={{
-          color: 'green',
-          '&:hover': {
-            backgroundColor: 'green',
-            color: 'white',
-          },
-        }}
-        onClick={onAddWorkoutsBtn}
-      >
-        <AddIcon label="add" />
-        create Workout
-      </Button>
-      <br />
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Button
+          // style={{ minWidth: '100%' }}
+          // variant="outlined"
+          color="primary"
+          sx={{
+            width: '200px',
+            color: 'green',
+            '&:hover': {
+              backgroundColor: 'green',
+              color: 'white',
+            },
+          }}
+          onClick={onAddWorkoutsBtn}
+        >
+          <AddIcon label="add" />
+          create Workout
+        </Button>
+      </Container>
+
       <br />
       <Paper elevation={2} sx={{ p: 2, maxHeight: '280px', overflow: 'auto' }}>
         {!userWorkouts ? (

@@ -29,14 +29,22 @@ const fetchById = async (req, res) => {
   if (!workoutId)
     return res.status(400).json({ message: 'workout id is required' });
 
-  const foundWorkout = await Workout.findById(workoutId).exec();
-  if (!foundWorkout) {
-    return res
-      .status(400)
-      .json({ message: 'Workout was not found - Bad ID' })
-      .send();
-  } else {
-    return res.status(200).json({ workout: foundWorkout }).end();
+  console.log(workoutId);
+  try {
+    const foundWorkout = await Workout.findById(workoutId).exec();
+    if (!foundWorkout) {
+      console.log(`not found`);
+      return res
+        .status(400)
+        .json({ message: 'Workout was not found - Bad ID' })
+        .send();
+    } else {
+      console.log(foundWorkout);
+      return res.status(200).json({ workout: foundWorkout }).end();
+    }
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500).end();
   }
 };
 
@@ -45,7 +53,7 @@ const fetchByUser = async (req, res) => {
   const userId = req?.cookies.userId;
   if (!userId)
     return res.status(500).json({ message: 'no userId found in request' });
-
+  console.log(`user = ${userId}`);
   const foundUser = await User.findById(userId).exec();
 
   if (!foundUser)

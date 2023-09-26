@@ -14,10 +14,12 @@ import Register from './components/Register';
 import Layout from './components/Layout';
 import Unauthorized from './components/Unauthorized';
 import RequireAuth from './components/RequireAuth';
+import PersistLogin from './components/PersistLogin';
 import Welcome from './components/Welcome';
 import ExploreWorkouts from './components/Workouts/ExploreWorkouts';
 import Account from './components/Account';
 import AdminControlPanel from './components/Admin/AdminControlPanel';
+import NewSession from './components/Sessions/NewSession';
 
 export const ROLES = {
   User: 1111,
@@ -41,39 +43,49 @@ const App = () => {
         <Route path="unauthorized" element={<Unauthorized />} />
 
         {/*Protected routes*/}
-        <Route
-          element={
-            <RequireAuth
-              logoutNavTo={NAV.Welcome}
-              allowedRoles={[ROLES.User]}
-            />
-          }
-        >
-          <Route path="/" element={<Home />} />
-        </Route>
-        <Route
-          element={
-            <RequireAuth logoutNavTo={NAV.Login} allowedRoles={[ROLES.User]} />
-          }
-        >
-          <Route path="/workouts" element={<Workouts />} />
-          <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
-          <Route path="/workouts/add-workout" element={<AddWorkout />} />
-          <Route path="/workouts/edit/:workoutId" element={<EditWorkout />} />
-          <Route path="/sessions" element={<Sessions />} />
-          <Route path="/timer" element={<Timer />} />
-          <Route path="/explore" element={<ExploreWorkouts />} />
-          <Route path="/myaccount" element={<Account />} />
-        </Route>
+        <Route element={<PersistLogin />}>
+          <Route
+            element={
+              <RequireAuth
+                logoutNavTo={NAV.Welcome}
+                allowedRoles={[ROLES.User]}
+              />
+            }
+          >
+            <Route path="/" element={<Home />} />
+          </Route>
+          <Route
+            element={
+              <RequireAuth
+                logoutNavTo={NAV.Login}
+                allowedRoles={[ROLES.User]}
+              />
+            }
+          >
+            <Route path="/workouts" element={<Workouts />} />
+            <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
+            <Route path="/workouts/add-workout" element={<AddWorkout />} />
+            <Route path="/workouts/edit/:workoutId" element={<EditWorkout />} />
+            <Route path="/sessions" element={<Sessions />} />
+            <Route path="/sessions/new-session" element={<NewSession />} />
 
-        <Route
-          element={
-            <RequireAuth logoutNavTo={NAV.Login} allowedRoles={[ROLES.Admin]} />
-          }
-        >
-          <Route path="admin/control-panel" element={<AdminControlPanel />} />
-        </Route>
+            <Route path="/timer" element={<Timer />} />
+            <Route path="/explore" element={<ExploreWorkouts />} />
+            <Route path="/myaccount" element={<Account />} />
+          </Route>
 
+          <Route
+            element={
+              <RequireAuth
+                logoutNavTo={NAV.Login}
+                allowedRoles={[ROLES.Admin]}
+              />
+            }
+          >
+            <Route path="admin/control-panel" element={<AdminControlPanel />} />
+          </Route>
+        </Route>
+        {/* 404 is not a protected route. */}
         <Route path="/*" element={<PageNotFound />} />
       </Route>
     </Routes>

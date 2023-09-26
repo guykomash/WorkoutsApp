@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import {
   Grid,
   Typography,
@@ -14,57 +14,111 @@ import {
 } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
-
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useWorkouts } from '../../contexts/WorkoutsProvider';
 import { v4 as uuidv4 } from 'uuid';
+import { useExercises } from '../../contexts/ExercisesProvider';
+import ExerciseCreateOptionDialog from '../ExerciseCreateOptionDialog';
 
 const AddWorkout = () => {
   // Add Workout form
   const { addWorkout } = useWorkouts().user;
+  const { fetchAllExercises, moveExerciseIndex } = useExercises();
   const [newTitle, setNewTitle] = useState('');
-  const [newExercises, setNewExercises] = useState([
-    { id: uuidv4(), type: 'strength' },
-  ]);
+  const [newExercises, setNewExercises] = useState([{ id: uuidv4() }]);
+
+  useEffect(() => {
+    fetchAllExercises();
+  }, []);
 
   const navigate = useNavigate();
+  const getExerciseIndexById = (id) => {
+    const index = newExercises.findIndex((exercise) => {
+      return exercise.id === id;
+    });
+    return index;
+  };
+
+  const handleMoveUpExercise = (id) => {
+    const fromIndex = getExerciseIndexById(id);
+    if (fromIndex === 0) {
+      return;
+    } else {
+      setNewExercises((prev) => {
+        return moveExerciseIndex(
+          { exercises: prev },
+          fromIndex,
+          fromIndex - 1
+        ).exercises.slice();
+      });
+    }
+  };
+
+  const handleMoveDownExercise = (id) => {
+    const fromIndex = getExerciseIndexById(id);
+    if (fromIndex === newExercises.length - 1) {
+      return;
+    } else {
+      setNewExercises((prev) => {
+        return moveExerciseIndex(
+          { exercises: prev },
+          fromIndex,
+          fromIndex + 1
+        ).exercises.slice();
+      });
+    }
+  };
 
   const sumbitWorkout = () => {
     let isValid = true;
 
     if (!newTitle) {
-      alert('title missing');
+      alert('workout title missing');
       isValid = false;
     }
-
+    let noEmptyExercises = [];
     if (newExercises) {
-      newExercises.forEach((exercise) => {
+      // newExercises.forEach((exercise) => {
+      //   if (exercise.id && !exercise.title && !exercise.type) {
+      //     newExercises.pop(exercise);
+      //   } else if (!exercise.title || !exercise.type) {
+      //     alert('missing type or title.');
+      //     isValid = false;
+      //   }
+      // });
+      // console.log(newExercises);
+      noEmptyExercises = newExercises.filter((exercise) => {
         if (!exercise.title || !exercise.type) {
-          alert('missing type or title.');
-          isValid = false;
-        }
+          return false;
+        } else return true;
       });
+
+      console.log(noEmptyExercises);
     } else {
       alert('exercises missing');
       isValid = false;
     }
 
     if (isValid) {
-      const formattedExercises = newExercises.map((exercise) => {
+      const formattedExercises = noEmptyExercises.map((exercise) => {
         const newExercise = {
           title: exercise.title,
           type: exercise.type,
         };
-        if (exercise.type === 'strength') {
-          // only sets and reps.
-          if (exercise?.sets) newExercise.sets = exercise.sets;
-          if (exercise?.reps) newExercise.reps = exercise.reps;
-        } else {
-          // only distance and duration
-          if (exercise?.duration) newExercise.duration = exercise.duration;
-          if (exercise?.distance) newExercise.distance = exercise.distance;
-        }
+
+        // only sets and reps.
+        if (exercise?.exercise_id)
+          newExercise.exercise_id = exercise.exercise_id;
+        if (exercise?.sets) newExercise.sets = exercise.sets;
+        if (exercise?.reps) newExercise.reps = exercise.reps;
+        // only distance and duration
+        if (exercise?.duration) newExercise.duration = exercise.duration;
+        if (exercise?.distance) newExercise.distance = exercise.distance;
+        // new exercise template
 
         return newExercise;
       });
@@ -80,15 +134,41 @@ const AddWorkout = () => {
     navigate('/workouts');
   };
 
-  const handleExerciseTitleChange = (title, id) => {
-    setNewExercises((prev) =>
-      prev.map((e, i) => (e.id === id ? { ...e, title: title } : e))
-    );
+  const handleTitleChange = (nextTitle) => {
+    setNewTitle(nextTitle);
   };
-  const handleExerciseTypeChange = (type, id) => {
-    setNewExercises((prev) =>
-      prev.map((e, i) => (e.id === id ? { ...e, type: type } : e))
-    );
+  const handleExerciseChange = (exerciseValue) => {
+    // console.log(exerciseValue);
+    if (exerciseValue) {
+      const { id, title, type } = exerciseValue;
+      if (exerciseValue?._id) {
+        setNewExercises((prev) =>
+          prev.map((e, i) =>
+            e.id === id
+              ? {
+                  ...e,
+                  title: title,
+                  type: type,
+                  exercise_id: exerciseValue._id,
+                }
+              : e
+          )
+        );
+      } else {
+        // new Exercise. np need to insert exercise_id.
+        setNewExercises((prev) =>
+          prev.map((e, i) =>
+            e.id === id
+              ? {
+                  ...e,
+                  title: title,
+                  type: type,
+                }
+              : e
+          )
+        );
+      }
+    }
   };
 
   const handleExerciseSetsChange = (sets, id) => {
@@ -108,6 +188,7 @@ const AddWorkout = () => {
       prev.map((e, i) => (e.id === id ? { ...e, duration: duration } : e))
     );
   };
+
   const handleExerciseDistanceChange = (distance, id) => {
     setNewExercises((prev) =>
       prev.map((e, i) => (e.id === id ? { ...e, distance: distance } : e))
@@ -115,7 +196,7 @@ const AddWorkout = () => {
   };
 
   const handleAddExercise = () => {
-    setNewExercises((prev) => [...prev, { id: uuidv4(), type: 'strength' }]);
+    setNewExercises((prev) => [...prev, { id: uuidv4() }]);
   };
 
   const handleExerciseDelete = (id) => {
@@ -129,176 +210,169 @@ const AddWorkout = () => {
   return (
     <Container maxWidth="sm">
       <br />
-      <Typography variant="h4" align="center" gutterBottom>
-        Create workout
-      </Typography>
+      <Button color="primary" onClick={() => onWorkoutsBtn()}>
+        <KeyboardBackspaceIcon />
+        back
+      </Button>
+      <br />
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '300px',
+            borderRadius: '6px',
+          }}
+        >
+          Create Workout
+        </Typography>
+        <br />
+      </Container>
       <Paper elevation={2} sx={{ p: 2 }}>
         <Grid item xs={12}>
-          <br />
-          <Typography variant="h6">Title </Typography>
+          <Typography variant="h6" sx={{ fontWeight: '700', color: '#3f50b5' }}>
+            Title
+          </Typography>
           <TextField
-            sx={{ inputRoot: '30px', fontSize: '30' }}
             label="Workout Title"
+            value={newTitle}
+            variant="filled"
             fullWidth
             margin="normal"
-            onChange={(event) => {
-              setNewTitle(event.target.value);
-            }}
+            InputLabelProps={{ shrink: true }}
+            onChange={(e) => handleTitleChange(e.target.value)}
           />
-          <Grid>
-            <br />
-            <Typography variant="h6">Exercises</Typography>
-            <br />
-            {newExercises.map((exercise, index) => (
-              <Paper
-                key={exercise.id}
-                elevation={4}
+          <br />
+          <br />
+          {newExercises.map((exercise, index) => (
+            <Paper
+              key={exercise.id}
+              elevation={4}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                p: 2,
+                mr: 2,
+                marginBottom: 2,
+              }}
+            >
+              <Container
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  p: 2,
-                  mr: 2,
-                  marginBottom: 2,
                 }}
               >
-                <Container
+                <Typography
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
+                    fontSize: 16,
+                    fontWeight: '700',
+                    color: '#3f50b5',
                   }}
+                >{`Exercise ${index + 1}`}</Typography>
+
+                <Button
+                  sx={{ color: 'green' }}
+                  onClick={() => handleMoveUpExercise(exercise.id)}
                 >
-                  <Typography
-                    sx={{
-                      fontSize: 16,
-                      fontWeight: '700',
-                      color: '#3f50b5',
-                    }}
-                  >{`Exercise ${index + 1}`}</Typography>
-                  <Button
-                    color="error"
-                    onClick={() => handleExerciseDelete(exercise.id)}
-                  >
-                    <DeleteIcon></DeleteIcon>
-                  </Button>
-                </Container>
+                  <ArrowUpwardIcon></ArrowUpwardIcon>
+                </Button>
+                <Button
+                  sx={{ color: 'green' }}
+                  onClick={() => handleMoveDownExercise(exercise.id)}
+                >
+                  <ArrowDownwardIcon></ArrowDownwardIcon>
+                </Button>
+                <Button
+                  color="error"
+                  onClick={() => handleExerciseDelete(exercise.id)}
+                >
+                  <DeleteIcon></DeleteIcon>
+                </Button>
+              </Container>
+              <br />
+              <br />
+              <ExerciseCreateOptionDialog
+                exerciseValue={exercise}
+                setExerciseValue={handleExerciseChange}
+              />
+              <br />
+              <Container
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2,auto)',
+                  columnGap: 2,
+                  rowGap: 2,
+                }}
+              >
                 <TextField
-                  fullWidth
-                  id={exercise.id}
-                  label="Title"
-                  value={exercise.title}
+                  label="Sets"
+                  value={exercise.sets}
                   margin="normal"
                   onChange={(e) =>
-                    handleExerciseTitleChange(e.target.value, exercise.id)
+                    handleExerciseSetsChange(e.target.value, exercise.id)
                   }
                 />
+                <TextField
+                  label="Reps"
+                  margin="normal"
+                  value={exercise.reps}
+                  onChange={(e) =>
+                    handleExerciseRepsChange(e.target.value, exercise.id)
+                  }
+                />
+
+                <TextField
+                  label="Duration"
+                  value={exercise.duration}
+                  margin="normal"
+                  onChange={(e) =>
+                    handleExerciseDurationChange(e.target.value, exercise.id)
+                  }
+                />
+                <TextField
+                  label="Distance"
+                  margin="normal"
+                  defaultValue={''}
+                  value={exercise.distance}
+                  onChange={(e) =>
+                    handleExerciseDistanceChange(e.target.value, exercise.id)
+                  }
+                />
+
                 <br />
-                <FormControl sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <FormLabel
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      fontWeight: '500',
-                      color: 'black',
-                    }}
-                  >
-                    Exercise Type
-                  </FormLabel>
-                  <RadioGroup
-                    sx={{ display: 'felx', justifyContent: 'center' }}
-                    defaultValue={'strength'}
-                    value={exercise.type}
-                    onChange={(e) =>
-                      handleExerciseTypeChange(e.target.value, exercise.id)
-                    }
-                    row
-                  >
-                    <FormControlLabel
-                      value="strength"
-                      control={<Radio />}
-                      label="Strength"
-                    />
-                    <FormControlLabel
-                      value="aerobic"
-                      control={<Radio />}
-                      label="Aerobic"
-                    />
-                  </RadioGroup>
-                </FormControl>
-
-                <Container
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
-                  }}
-                >
-                  {exercise.type === 'strength' ? (
-                    <>
-                      <TextField
-                        id={exercise.id}
-                        label="Sets"
-                        value={exercise.sets}
-                        margin="normal"
-                        onChange={(e) =>
-                          handleExerciseSetsChange(e.target.value, exercise.id)
-                        }
-                      />
-                      <TextField
-                        id={exercise.id}
-                        label="Reps"
-                        margin="normal"
-                        value={exercise.reps}
-                        onChange={(e) =>
-                          handleExerciseRepsChange(e.target.value, exercise.id)
-                        }
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <TextField
-                        id={exercise.id}
-                        label="Duration"
-                        value={exercise.duration}
-                        margin="normal"
-                        onChange={(e) =>
-                          handleExerciseDurationChange(
-                            e.target.value,
-                            exercise.id
-                          )
-                        }
-                      />
-                      <TextField
-                        id={exercise.id}
-                        label="Distance"
-                        margin="normal"
-                        value={exercise.distance}
-                        onChange={(e) =>
-                          handleExerciseDistanceChange(
-                            e.target.value,
-                            exercise.id
-                          )
-                        }
-                      />
-                    </>
-                  )}
-                  <br />
-                </Container>
-              </Paper>
-            ))}
-
-            <br />
+              </Container>
+            </Paper>
+          ))}
+          <br />
+          <Container
+            sx={{
+              display: 'flex',
+              width: '300px',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
             <Button
               color="primary"
               aria-label="add"
-              variant="contained"
+              sx={{
+                color: 'white',
+                backgroundColor: 'green',
+                ':hover': { backgroundColor: 'white', color: 'green' },
+              }}
               onClick={() => handleAddExercise()}
             >
               <AddIcon label="add" />
               Exercise
             </Button>
-          </Grid>
+          </Container>
         </Grid>
       </Paper>
       <br />
@@ -307,10 +381,12 @@ const AddWorkout = () => {
         variant="outlined"
         color="primary"
         sx={{
-          color: 'green',
+          height: '50px',
+          color: 'white',
+          backgroundColor: '#333333',
           '&:hover': {
-            backgroundColor: 'green',
-            color: 'white',
+            backgroundColor: '#333333',
+            color: 'gold',
           },
         }}
         onClick={(e) => {
@@ -321,26 +397,8 @@ const AddWorkout = () => {
       </Button>
       <br />
       <br />
-      <Button
-        style={{ minWidth: '100%' }}
-        variant="contained"
-        color="primary"
-        onClick={() => onWorkoutsBtn()}
-      >
-        Back to Workouts
-      </Button>
-      {/* {!exercises ? (
-        <Typography>Loading exercises</Typography>
-      ) : exercises.length === 0 ? (
-        <Typography>no exercises found.</Typography>
-      ) : (
-        exercises.map((e, i) => (
-          <>
-            <Typography key={`${e.title}-${e.type}-${i}`}>{e.title}</Typography>
-            <Typography>{e.type}</Typography>
-          </>
-        ))
-      )} */}
+      <br />
+      <br />
     </Container>
   );
 };

@@ -3,6 +3,7 @@ import { Button, Container, Grid, Typography } from '@mui/material';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 
 import { useExercises } from '../contexts/ExercisesProvider';
+import ExerciseCreateOptionDialog from './ExerciseCreateOptionDialog';
 
 const Home = () => {
   // const { exercises, addExercise } = useExercises();
@@ -19,25 +20,10 @@ const Home = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Home Page
         </Typography>
-        {/* <br />
         <br />
-        <Button onClick={() => addExercise(exercise.title, exercise.type)}>
-          Post Deadlift exercise
-        </Button>
-        {!exercises ? (
-          <Typography>Loading exercises</Typography>
-        ) : exercises.length === 0 ? (
-          <Typography>no exercises found.</Typography>
-        ) : (
-          exercises.map((e, i) => (
-            <>
-              <Typography key={`${e.title}-${e.type}-${i}`}>
-                {e.title}
-              </Typography>
-              <Typography>{e.type}</Typography>
-            </>
-          ))
-        )} */}
+        <br />
+        <br />
+        {/* <ExerciseCreateOptionDialog /> */}
       </Grid>
     </Container>
   );

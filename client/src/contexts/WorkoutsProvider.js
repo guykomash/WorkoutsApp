@@ -1,6 +1,7 @@
 import { createContext, useState, useContext } from 'react';
 import useAxiosPrivate from '../hooks/useAxiosPrivate';
 import { useExercises } from './ExercisesProvider';
+const { v4: uuidv4 } = require('uuid');
 
 const WorkoutsContext = createContext([]);
 
@@ -26,8 +27,11 @@ export const WorkoutsProvider = ({ children }) => {
 
   // All workouts
   const getWorkoutById = (workoutId) => {
-    if (!allWorkouts) return;
-    return allWorkouts.find((workout) => workout._id === workoutId);
+    console.log(`getWorkoutById`);
+    if (allWorkouts) {
+      console.log(`AllWorkout: ${JSON.stringify(allWorkouts)}`);
+      return allWorkouts.find((workout) => workout._id === workoutId);
+    } else return null;
   };
 
   const fetchAllWorkouts = async () => {
@@ -40,28 +44,50 @@ export const WorkoutsProvider = ({ children }) => {
     }
   };
 
-  // User workouts
+  const fetchWorkoutDetailsById = (setWorkoutDetails, workoutId) => {
+    axiosPrivate
+      .get(`/workouts/${workoutId}`)
+      .then((response) => {
+        setWorkoutDetails(response?.data?.workout);
+      })
+      .catch((err) => console.error(err));
+  };
 
+  // User workouts
   const fetchUserWorkouts = async () => {
-    console.log('fetching user workouts... (and saved)');
     try {
       const response = await axiosPrivate.get(`/workouts`);
       setUserWorkouts(response?.data?.Workouts);
       setSavedWorkouts(response.data.savedWorkouts);
-      console.log(response?.data?.Workouts);
-      console.log(response.data.savedWorkouts);
     } catch (err) {
       console.error(err);
     }
   };
 
   const getUserWorkoutById = (workoutId) => {
-    if (!userWorkouts) return;
-    const foundWorkout = userWorkouts.find(
-      (workout) => workout._id === workoutId
-    );
-    if (!foundWorkout) return;
-    return JSON.parse(JSON.stringify(foundWorkout)); // returns a copy.
+    if (userWorkouts) {
+      const foundWorkout = userWorkouts.find(
+        (workout) => workout._id === workoutId
+      );
+      if (!foundWorkout) return;
+      return JSON.parse(JSON.stringify(foundWorkout)); // returns a copy.
+    }
+  };
+
+  const getEditUserWorkoutById = (workoutId) => {
+    // exercises in data stored with _id. return new exercises with id from uuid.
+    if (userWorkouts) {
+      const foundWorkout = userWorkouts.find(
+        (workout) => workout._id === workoutId
+      );
+      if (!foundWorkout) return;
+      const copiedWorkout = JSON.parse(JSON.stringify(foundWorkout));
+      const newExercises = copiedWorkout.exercises.map((exercise) => {
+        const { _id: _, ...newExercise } = exercise;
+        return { id: uuidv4(), ...newExercise };
+      });
+      return { ...copiedWorkout, exercises: newExercises };
+    }
   };
 
   const updateWorkout = async (workoutId, workout) => {
@@ -77,7 +103,6 @@ export const WorkoutsProvider = ({ children }) => {
   };
 
   const addWorkout = async (title, exercises) => {
-    console.log(`addWorkout`);
     try {
       const response = await axiosPrivate.post(`/workouts/add-workout`, {
         workout: {
@@ -85,7 +110,6 @@ export const WorkoutsProvider = ({ children }) => {
           exercises: exercises,
         },
       });
-      console.log(response.data.Workouts);
       setUserWorkouts(response.data.Workouts);
       await fetchAllExercises(); // user maybe added new exercises.
     } catch (err) {
@@ -104,8 +128,8 @@ export const WorkoutsProvider = ({ children }) => {
 
   // User saved workouts
   const getSavedWorkoutById = (workoutId) => {
-    if (!savedWorkouts) return;
-    return savedWorkouts.find((workout) => workout._id === workoutId);
+    if (savedWorkouts)
+      return savedWorkouts.find((workout) => workout._id === workoutId);
   };
   const addSavedWorkout = async (workoutId) => {
     try {
@@ -129,19 +153,6 @@ export const WorkoutsProvider = ({ children }) => {
     }
   };
 
-  const restoreExercises = (workoutId, backUpExercises) => {
-    console.log('restoreExercises');
-    setUserWorkouts((prevWorkouts) => {
-      return prevWorkouts.map((workout) => {
-        if (workout._id === workoutId) {
-          console.log(workout.exercises);
-          console.log(backUpExercises);
-          return { ...workout, exercises: backUpExercises };
-        } else return workout;
-      });
-    });
-  };
-
   const value = {
     global: {
       allWorkouts,
@@ -150,6 +161,7 @@ export const WorkoutsProvider = ({ children }) => {
       fetchAllWorkouts,
       filteredWorkouts,
       setFilteredWorkouts,
+      fetchWorkoutDetailsById,
     },
     user: {
       userWorkouts,
@@ -164,7 +176,7 @@ export const WorkoutsProvider = ({ children }) => {
       getSavedWorkoutById,
       addSavedWorkout,
       deleteSavedWorkout,
-      restoreExercises,
+      getEditUserWorkoutById,
     },
   };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -8,39 +8,39 @@ import {
   Paper,
   Typography,
   TextField,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormControl,
-  FormLabel,
 } from '@mui/material';
+
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useExercises } from '../../contexts/ExercisesProvider';
 import { useWorkouts } from '../../contexts/WorkoutsProvider';
+import ExerciseCreateOptionDialog from '../ExerciseCreateOptionDialog';
 const { v4: uuidv4 } = require('uuid');
 
 const EditWorkout = () => {
   const navigate = useNavigate();
   const { workoutId } = useParams();
-  const { getUserWorkoutById, updateWorkout, restoreExercises } =
-    useWorkouts().user;
-  const { moveExerciseIndex } = useExercises();
-  const [workout, setWorkout] = useState(getUserWorkoutById(workoutId));
-  const backupExercises = getUserWorkoutById(workoutId).exercises.slice();
+  const { getEditUserWorkoutById, updateWorkout } = useWorkouts().user;
+  const { moveExerciseIndex, fetchAllExercises } = useExercises();
+  const [workout, setWorkout] = useState(getEditUserWorkoutById(workoutId));
+
+  useEffect(() => {
+    fetchAllExercises();
+  }, []);
 
   const getExerciseIndexById = (id) => {
     const index = workout.exercises.findIndex((exercise) => {
-      return exercise._id === id;
+      return exercise.id === id;
     });
     return index;
   };
 
   const handleMoveUpExercise = (id) => {
     const fromIndex = getExerciseIndexById(id);
-    console.log(`fromIndex ${fromIndex}`);
+    // console.log(`fromIndex ${fromIndex}`);
     if (fromIndex === 0) {
       return;
     } else {
@@ -51,7 +51,7 @@ const EditWorkout = () => {
 
   const handleMoveDownExercise = (id) => {
     const fromIndex = getExerciseIndexById(id);
-    console.log(`fromIndex ${fromIndex}`);
+    // console.log(`fromIndex ${fromIndex}`);
     if (fromIndex === workout.exercises.length - 1) {
       return;
     } else {
@@ -61,7 +61,6 @@ const EditWorkout = () => {
   };
 
   const onWorkoutsBtn = () => {
-    // restoreExercises(workoutId, backupExercises);
     navigate('/workouts');
   };
 
@@ -73,50 +72,89 @@ const EditWorkout = () => {
 
   const handleExerciseDelete = (id) => {
     if (workout.exercises.length > 1) {
-      const nextExercises = workout.exercises.filter((e) => e._id !== id);
+      const nextExercises = workout.exercises.filter((e) => e.id !== id);
       setWorkout((prev) => {
         return { ...prev, exercises: nextExercises };
       });
     }
   };
 
-  const handleExerciseTitleChange = (title, id) => {
-    setWorkout((prev) => {
-      return {
-        ...prev,
-        exercises: prev.exercises.map((e) =>
-          e._id === id ? { ...e, title: title } : e
-        ),
-      };
-    });
+  const handleExerciseChange = (exerciseValue) => {
+    // console.log(exerciseValue);
+    if (exerciseValue) {
+      const { id, title, type } = exerciseValue;
+      if (exerciseValue?._id) {
+        setWorkout((prevWorkout) => {
+          return {
+            ...prevWorkout,
+            exercises: prevWorkout.exercises.map((e) =>
+              e.id === id
+                ? {
+                    ...e,
+                    title: title,
+                    type: type,
+                    exercise_id: exerciseValue._id,
+                  }
+                : e
+            ),
+          };
+        });
+      } else {
+        // User added a new exercise. no need to insert exercise_id.
+        setWorkout((prevWorkout) => {
+          return {
+            ...prevWorkout,
+            exercises: prevWorkout.exercises.map((e) =>
+              e.id === id
+                ? {
+                    ...e,
+                    title: title,
+                    type: type,
+                  }
+                : e
+            ),
+          };
+        });
+      }
+    }
   };
+  // const handleExerciseTitleChange = (title, id) => {
+  //   setWorkout((prev) => {
+  //     return {
+  //       ...prev,
+  //       exercises: prev.exercises.map((e) =>
+  //         e._id === id ? { ...e, title: title } : e
+  //       ),
+  //     };
+  //   });
+  // };
 
-  const handleExerciseTypeChange = (type, id) => {
-    setWorkout((prev) => {
-      return {
-        ...prev,
-        exercises: prev.exercises.map((e) =>
-          e._id === id
-            ? {
-                ...e,
-                type: type,
-                sets: e.reps || '',
-                reps: e.reps || '',
-                duration: e.duration || '',
-                distance: e.distance || '',
-              }
-            : e
-        ),
-      };
-    });
-  };
+  // const handleExerciseTypeChange = (type, id) => {
+  //   setWorkout((prev) => {
+  //     return {
+  //       ...prev,
+  //       exercises: prev.exercises.map((e) =>
+  //         e._id === id
+  //           ? {
+  //               ...e,
+  //               type: type,
+  //               sets: e.reps || '',
+  //               reps: e.reps || '',
+  //               duration: e.duration || '',
+  //               distance: e.distance || '',
+  //             }
+  //           : e
+  //       ),
+  //     };
+  //   });
+  // };
 
   const handleExerciseSetsChange = (sets, id) => {
     setWorkout((prev) => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e._id === id ? { ...e, sets: sets } : e
+          e.id === id ? { ...e, sets: sets } : e
         ),
       };
     });
@@ -127,7 +165,7 @@ const EditWorkout = () => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e._id === id ? { ...e, reps: reps } : e
+          e.id === id ? { ...e, reps: reps } : e
         ),
       };
     });
@@ -138,7 +176,7 @@ const EditWorkout = () => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e._id === id ? { ...e, duration: duration } : e
+          e.id === id ? { ...e, duration: duration } : e
         ),
       };
     });
@@ -149,7 +187,7 @@ const EditWorkout = () => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e._id === id ? { ...e, distance: distance } : e
+          e.id === id ? { ...e, distance: distance } : e
         ),
       };
     });
@@ -159,7 +197,7 @@ const EditWorkout = () => {
     setWorkout((prev) => {
       return {
         ...prev,
-        exercises: [...prev.exercises, { _id: uuidv4(), type: 'strength' }],
+        exercises: [...prev.exercises, { id: uuidv4() }],
       };
     });
   };
@@ -177,6 +215,7 @@ const EditWorkout = () => {
     }
     return isValid;
   };
+
   const handleUpdateWorkout = () => {
     if (!checkValidForm()) return alert('one or more empty fields');
 
@@ -186,15 +225,11 @@ const EditWorkout = () => {
         title: exercise.title,
         type: exercise.type,
       };
-      if (exercise.type === 'strength') {
-        // only sets and reps.
-        if (exercise?.sets) newExercise.sets = exercise.sets;
-        if (exercise?.reps) newExercise.reps = exercise.reps;
-      } else {
-        // only distance and duration
-        if (exercise?.duration) newExercise.duration = exercise.duration;
-        if (exercise?.distance) newExercise.distance = exercise.distance;
-      }
+      if (exercise.exercise_id) newExercise.exercise_id = exercise.exercise_id;
+      if (exercise?.sets) newExercise.sets = exercise.sets;
+      if (exercise?.reps) newExercise.reps = exercise.reps;
+      if (exercise?.duration) newExercise.duration = exercise.duration;
+      if (exercise?.distance) newExercise.distance = exercise.distance;
 
       return newExercise;
     });
@@ -204,19 +239,43 @@ const EditWorkout = () => {
       title: workout.title,
       exercises: formattedExercises,
     };
-
+    // console.log(formattedWorkout);
     updateWorkout(workoutId, formattedWorkout);
     navigate('/workouts');
   };
+
   return (
     <Container maxWidth="sm">
       <br />
-      <Typography variant="h4" align="center" gutterBottom>
-        Edit Workout
-      </Typography>
+      <Button color="primary" onClick={() => onWorkoutsBtn()}>
+        <KeyboardBackspaceIcon />
+        back
+      </Button>
+      <br />
+
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography
+          fullWidth
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '300px',
+            borderRadius: '6px',
+          }}
+        >
+          Edit Workout
+        </Typography>
+      </Container>
+      <br />
       <Paper elevation={2} sx={{ p: 2 }}>
         <Grid item xs={12}>
-          <Typography variant="h6">Title </Typography>
+          <Typography variant="h6" sx={{ fontWeight: '700', color: '#3f50b5' }}>
+            Title
+          </Typography>
           <TextField
             label="Workout Title"
             value={workout.title}
@@ -231,7 +290,7 @@ const EditWorkout = () => {
           {workout.exercises &&
             workout.exercises.map((exercise, index) => (
               <Paper
-                key={exercise._id}
+                key={exercise.id}
                 elevation={4}
                 sx={{
                   display: 'flex',
@@ -260,24 +319,24 @@ const EditWorkout = () => {
 
                   <Button
                     sx={{ color: 'green' }}
-                    onClick={() => handleMoveUpExercise(exercise._id)}
+                    onClick={() => handleMoveUpExercise(exercise.id)}
                   >
                     <ArrowUpwardIcon></ArrowUpwardIcon>
                   </Button>
                   <Button
                     sx={{ color: 'green' }}
-                    onClick={() => handleMoveDownExercise(exercise._id)}
+                    onClick={() => handleMoveDownExercise(exercise.id)}
                   >
                     <ArrowDownwardIcon></ArrowDownwardIcon>
                   </Button>
                   <Button
                     color="error"
-                    onClick={() => handleExerciseDelete(exercise._id)}
+                    onClick={() => handleExerciseDelete(exercise.id)}
                   >
                     <DeleteIcon></DeleteIcon>
                   </Button>
                 </Container>
-                <TextField
+                {/* <TextField
                   id={exercise._id}
                   label="Title"
                   value={exercise.title}
@@ -287,121 +346,98 @@ const EditWorkout = () => {
                   onChange={(e) =>
                     handleExerciseTitleChange(e.target.value, exercise._id)
                   }
+                /> */}
+                <br />
+                <br />
+                <ExerciseCreateOptionDialog
+                  exerciseValue={exercise}
+                  setExerciseValue={handleExerciseChange}
                 />
                 <br />
-                <FormControl sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <FormLabel
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      fontWeight: '500',
-                      color: 'black',
-                    }}
-                  >
-                    Exercise Type
-                  </FormLabel>
-                  <RadioGroup
-                    sx={{ display: 'felx', justifyContent: 'center' }}
-                    defaultValue={'strength'}
-                    value={exercise.type}
-                    onChange={(e) =>
-                      handleExerciseTypeChange(e.target.value, exercise._id)
-                    }
-                    row
-                  >
-                    <FormControlLabel
-                      value="strength"
-                      control={<Radio />}
-                      label="Strength"
-                    />
-                    <FormControlLabel
-                      value="aerobic"
-                      control={<Radio />}
-                      label="Aerobic"
-                    />
-                  </RadioGroup>
-                </FormControl>
-
                 <Container
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    justifyContent: 'space-around',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2,auto)',
+                    columnGap: 2,
+                    rowGap: 2,
                   }}
                 >
-                  {exercise.type !== 'aerobic' ? (
-                    <>
-                      <TextField
-                        label="Sets"
-                        value={exercise.sets}
-                        margin="normal"
-                        onChange={(e) =>
-                          handleExerciseSetsChange(e.target.value, exercise._id)
-                        }
-                      />
-                      <TextField
-                        label="Reps"
-                        margin="normal"
-                        value={exercise.reps}
-                        onChange={(e) =>
-                          handleExerciseRepsChange(e.target.value, exercise._id)
-                        }
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <TextField
-                        label="Duration"
-                        value={exercise.duration}
-                        margin="normal"
-                        onChange={(e) =>
-                          handleExerciseDurationChange(
-                            e.target.value,
-                            exercise._id
-                          )
-                        }
-                      />
-                      <TextField
-                        label="Distance"
-                        margin="normal"
-                        defaultValue={''}
-                        value={exercise.distance}
-                        onChange={(e) =>
-                          handleExerciseDistanceChange(
-                            e.target.value,
-                            exercise._id
-                          )
-                        }
-                      />
-                    </>
-                  )}
+                  <TextField
+                    label="Sets"
+                    value={exercise.sets}
+                    margin="normal"
+                    onChange={(e) =>
+                      handleExerciseSetsChange(e.target.value, exercise.id)
+                    }
+                  />
+                  <TextField
+                    label="Reps"
+                    margin="normal"
+                    value={exercise.reps}
+                    onChange={(e) =>
+                      handleExerciseRepsChange(e.target.value, exercise.id)
+                    }
+                  />
+
+                  <TextField
+                    label="Duration"
+                    value={exercise.duration}
+                    margin="normal"
+                    onChange={(e) =>
+                      handleExerciseDurationChange(e.target.value, exercise.id)
+                    }
+                  />
+                  <TextField
+                    label="Distance"
+                    margin="normal"
+                    defaultValue={''}
+                    value={exercise.distance}
+                    onChange={(e) =>
+                      handleExerciseDistanceChange(e.target.value, exercise.id)
+                    }
+                  />
+
                   <br />
                 </Container>
               </Paper>
             ))}
           <br />
-          <Button
-            color="primary"
-            aria-label="add"
-            variant="contained"
-            onClick={() => handleAddExercise()}
+          <Container
+            sx={{
+              display: 'flex',
+              width: '300px',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
           >
-            <AddIcon label="add" />
-            Add Exercise
-          </Button>
+            <Button
+              color="primary"
+              aria-label="add"
+              sx={{
+                color: 'white',
+                backgroundColor: 'green',
+                ':hover': { backgroundColor: 'white', color: 'green' },
+              }}
+              onClick={() => handleAddExercise()}
+            >
+              <AddIcon label="add" />
+              Add Exercise
+            </Button>
+          </Container>
         </Grid>
       </Paper>
       <br />
       <Button
-        disabled={!workout}
         fullWidth
         variant="outlined"
         color="primary"
         sx={{
-          color: 'green',
+          height: '50px',
+          color: 'white',
+          backgroundColor: '#333333',
           '&:hover': {
-            backgroundColor: 'green',
-            color: 'white',
+            backgroundColor: '#333333',
+            color: 'gold',
           },
         }}
         onClick={() => {
@@ -412,14 +448,8 @@ const EditWorkout = () => {
       </Button>
       <br />
       <br />
-      <Button
-        style={{ minWidth: '100%' }}
-        variant="contained"
-        color="primary"
-        onClick={() => onWorkoutsBtn()}
-      >
-        Back to Workouts
-      </Button>
+      <br />
+      <br />
     </Container>
   );
 };

@@ -28,11 +28,9 @@ const useAxiosPrivate = () => {
         const prevRequest = err?.config;
 
         if (err?.response?.status === 403 && !prevRequest.sent) {
-          console.log(prevRequest); // erase
           prevRequest.sent = true;
           const newAccessToken = await refresh();
           prevRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          console.log(prevRequest); // erase
           return axiosPrivate(prevRequest); // make the previous request , coupled with a new  access token.
         }
         return Promise.reject(err);

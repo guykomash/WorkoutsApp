@@ -9,11 +9,20 @@ const sessionSchema = new Schema({
   exercises: [
     {
       exercise_id: { type: ObjectId, required: true },
-      sets: [{ weight: String, reps: String, duration: String }],
-      distance: String,
-      duration: String,
+      title: { type: String, required: true },
+      type: { type: String, required: true },
+      sets: [
+        {
+          weight: String,
+          reps: String,
+          distance: String,
+          duration: String,
+          note: String,
+        },
+      ],
     },
   ],
+  note: String,
 });
 
 module.exports = mongoose.model('Session', sessionSchema);

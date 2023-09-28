@@ -48,47 +48,47 @@ const Workouts = () => {
   useEffect(() => {
     user.fetchUserWorkouts();
   }, []);
-  // //for testing.
-  // const addStamWorkout = () => {
-  //   const stam = {
-  //     title: 'Test Exercises Workout',
-  //     exercises: [
-  //       { title: 'Bench Press', type: 'strength', sets: '3', reps: '8' },
-  //       { title: 'lat pulldown', type: 'strength', sets: '3', reps: '10' },
-  //       { title: 'SQUAT', type: 'strength', sets: '5', reps: '20' },
-  //       { title: 'Lateral Rises', type: 'strength', sets: '4', reps: '8' },
-  //       { title: 'deadlift', type: 'strength', sets: '4', reps: '8' },
-  //       {
-  //         title: 'RunninG',
-  //         type: 'aerobic',
-  //         duration: '10 minutes',
-  //         distance: '1 miles',
-  //       },
-  //     ],
-  //   };
-
-  //   const testExercise = async (title, exercises) => {
-  //     try {
-  //       const response = await axiosPrivate.post('/exercises/test', {
-  //         workout: {
-  //           title: title,
-  //           exercises: exercises,
-  //         },
-  //       });
-  //       console.log(response.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
-  //   testExercise(stam.title, stam.exercises);
-  // };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <br />
-      <Typography variant="h5" align="center" gutterBottom>
-        My workouts
-      </Typography>
+      <br />
+      <Container
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '300px',
+            borderRadius: '6px',
+          }}
+        >
+          Workouts
+        </Typography>
+        <Typography
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '500px',
+            borderRadius: '6px',
+          }}
+        >
+          My Workouts
+        </Typography>
+      </Container>
       <Container sx={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           // style={{ minWidth: '100%' }}
@@ -152,9 +152,28 @@ const Workouts = () => {
       <br />
       <br />
       <List>
-        <Typography variant="h6" align="center">
-          Saved workouts
-        </Typography>
+        <Container
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <Typography
+            variant="h5"
+            align="center"
+            gutterBottom
+            sx={{
+              color: '#097969',
+              fontWeight: '600',
+              width: '500px',
+              borderRadius: '6px',
+            }}
+          >
+            Saved Workouts
+          </Typography>
+        </Container>
         <br />
         <Paper
           elevation={2}
@@ -192,18 +211,6 @@ const Workouts = () => {
       <br />
       <br />
       <br />
-      {/* {!exercises ? (
-        <Typography>Loading exercises</Typography>
-      ) : exercises.length === 0 ? (
-        <Typography>no exercises found.</Typography>
-      ) : (
-        exercises.map((e, i) => (
-          <>
-            <Typography key={`${e.title}-${e.type}-${i}`}>{e.title}</Typography>
-            <Typography>{e.type}</Typography>
-          </>
-        ))
-      )} */}
     </Container>
   );
 };

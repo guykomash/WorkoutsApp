@@ -28,6 +28,7 @@ app.use('/logout', require('./routes/logoutRoute'));
 app.use(verifyJWT); // from now on (waterfall...)
 app.use('/myaccount', require('./routes/accountRoute'));
 app.use('/workouts', require('./routes/workoutsRoute'));
+app.use('/sessions', require('./routes/sessionsRoute'));
 app.use('/exercises', require('./routes/exercisesRoute'));
 app.use('/admin', require('./routes/adminRoute'));
 

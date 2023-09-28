@@ -39,7 +39,7 @@ const ExploreWorkouts = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    // fetchUserWorkouts();
+    fetchUserWorkouts();
     fetchAllWorkouts();
   }, []);
 
@@ -77,8 +77,7 @@ const ExploreWorkouts = () => {
   };
 
   return (
-    <Container maxWidth="sm" overflow="true">
-      <br />
+    <Container maxWidth="md" overflow="true">
       <br />
       <br />
       <Container sx={{ display: 'flex', justifyContent: 'center' }}>

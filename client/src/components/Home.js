@@ -1,30 +1,113 @@
 import React from 'react';
 import { Button, Container, Grid, Typography } from '@mui/material';
-import useAxiosPrivate from '../hooks/useAxiosPrivate';
-
-import { useExercises } from '../contexts/ExercisesProvider';
-import ExerciseCreateOptionDialog from './ExerciseCreateOptionDialog';
-
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
-  // const { exercises, addExercise } = useExercises();
-
-  // const exercise = {
-  //   title: 'Deadlift',
-  //   type: 'strength',
-  // };
-
+  const navigate = useNavigate();
   return (
-    <Container maxWidth="sm">
-      <Grid item xs={12}>
-        <br />
-        <Typography variant="h4" align="center" gutterBottom>
-          Home Page
+    <Container maxWidth="md">
+      <br />
+      <br />
+      <Container
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            width: '300px',
+            borderRadius: '6px',
+          }}
+        >
+          WORKOUTS
         </Typography>
         <br />
+        <Typography
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            borderRadius: '6px',
+          }}
+        >
+          Welcome to WORKOUTS!
+        </Typography>
         <br />
+        <Typography
+          variant="h5"
+          align="center"
+          gutterBottom
+          sx={{
+            color: '#097969',
+            fontWeight: '600',
+            align: 'center',
+            borderRadius: '30px',
+            backgroundColor: '#d3d3d3',
+          }}
+        >
+          <br />
+          Create and edit your own workouts.
+          <br />
+          <br />
+          Explore workouts created by others, and saved them.
+          <br />
+          <br /> Workouts can be used as a template for your sessions, where
+          you'll be able to keep track of your progression in each exercise.
+          <br />
+          <br />
+          Use existing exercises for you workouts and sessions, or create your
+          own!
+          <br />
+          <br />
+        </Typography>
         <br />
-        {/* <ExerciseCreateOptionDialog /> */}
-      </Grid>
+        <Container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Button
+            size="small"
+            sx={{
+              width: '320px',
+              borderRadius: '5px',
+              color: 'black',
+              backgroundColor: 'gold',
+              ':hover': {
+                color: 'gold',
+                backgroundColor: '#333333',
+              },
+            }}
+            fullWidth
+            onClick={() => navigate('/workouts/add-workout')}
+          >
+            Create Workout
+          </Button>
+          <Button
+            size="small"
+            sx={{
+              width: '320px',
+              borderRadius: '5px',
+              color: 'black',
+              backgroundColor: 'gold',
+              ':hover': {
+                color: 'gold',
+                backgroundColor: '#333333',
+              },
+            }}
+            fullWidth
+            onClick={() => navigate('/sessions/new-session')}
+          >
+            Start New Session
+          </Button>
+        </Container>
+      </Container>
     </Container>
   );
 };

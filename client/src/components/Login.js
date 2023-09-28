@@ -27,8 +27,6 @@ const Login = () => {
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
   const { auth, setAuth } = useAuth();
-  const { fetchUserWorkouts } = useWorkouts().user;
-  const { fetchAllExercises } = useExercises();
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
   const [errMsg, setErrMsg] = useState('');
@@ -60,19 +58,13 @@ const Login = () => {
       const lastName = res?.data?.userLastName;
       const created = res?.data?.created;
       setSuccess(true);
-      // await fetchUserWorkouts();
-      // await fetchAllExercises();
-
       setAuth({ userId, userName, firstName, lastName, created, accessToken });
-
-      // init user workouts and exercises in contexts.
       setUser('');
       setPwd('');
     } catch (err) {
       if (err?.response?.status === 403) {
-        // setSuccess(true);
         console.log('403');
-      } else if (err?.response.status === 400) {
+      } else if (err?.response?.status === 400) {
         setErrMsg('Missing username or password.');
       } else if (err?.response?.status === 401) {
         setErrMsg('Wrong username or password.');

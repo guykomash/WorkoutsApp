@@ -29,7 +29,6 @@ const fetchById = async (req, res) => {
   if (!workoutId)
     return res.status(400).json({ message: 'workout id is required' });
 
-  console.log(workoutId);
   try {
     const foundWorkout = await Workout.findById(workoutId).exec();
     if (!foundWorkout) {
@@ -39,7 +38,6 @@ const fetchById = async (req, res) => {
         .json({ message: 'Workout was not found - Bad ID' })
         .send();
     } else {
-      console.log(foundWorkout);
       return res.status(200).json({ workout: foundWorkout }).end();
     }
   } catch (err) {
@@ -53,7 +51,6 @@ const fetchByUser = async (req, res) => {
   const userId = req?.cookies.userId;
   if (!userId)
     return res.status(500).json({ message: 'no userId found in request' });
-  console.log(`user = ${userId}`);
   const foundUser = await User.findById(userId).exec();
 
   if (!foundUser)
@@ -63,8 +60,6 @@ const fetchByUser = async (req, res) => {
   const savedWorkouts = await Workout.find({
     _id: { $in: foundUser.saved_workouts },
   }).exec();
-
-  console.log(savedWorkouts);
 
   const id = foundUser._id;
   const Workouts = await Workout.find({ user_id: id }).exec();
@@ -81,7 +76,7 @@ const fetchByOtherUser = async (req, res) => {
   if (!userId)
     return res.status(500).json({ message: 'no userId found in request' });
 
-  const foundUser = await User.findById(userId);
+  const foundUser = await User.findById(userId).exec();
   if (!foundUser)
     return res.status(500).json({ message: 'request userId dont exist id DB' });
 
@@ -95,7 +90,6 @@ const fetchByOtherUser = async (req, res) => {
   if (!Workouts) {
     return res.status(500).json({ message: 'err while workouts fetchAll' });
   } else {
-    console.log(Workouts);
     return res.status(200).send({ Workouts }).end();
   }
 };
@@ -109,29 +103,32 @@ const deleteById = async (req, res) => {
   if (!workoutId)
     return res.status(400).json({ message: 'workout id is required' });
 
-  const loggedInUser = await User.findById(userId);
+  const loggedInUser = await User.findById(userId).exec();
   if (!loggedInUser)
     return res.status(500).json({ message: 'request userId dont exist id DB' });
 
   // request is OK.
-
-  const foundWorkout = await Workout.findOneAndDelete({
-    _id: workoutId,
-  }).exec();
-  if (!foundWorkout)
-    return res
-      .status(400)
-      .json({ message: 'Workout was not found - Bad ID' })
-      .send();
-
-  // for re-rendering, return updated Workouts for the user.
-  const id = loggedInUser._id;
-  const Workouts = await Workout.find({ user_id: id }).exec();
-  if (!Workouts) {
-    return res.status(500).json({ message: 'err while workouts fetchAll' });
-  } else {
-    return res.status(200).send({ Workouts }).end();
+  try {
+    const foundWorkout = await Workout.findOneAndDelete({
+      _id: workoutId,
+    }).exec();
+    if (!foundWorkout) {
+      return res
+        .status(400)
+        .send({ message: 'Workout was not found - Bad ID' });
+    } else return res.status(200).send({ message: 'Workout deleted!' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: 'error in delete workout' });
   }
+  // for re-rendering, return updated Workouts for the user.
+  // const id = loggedInUser._id;
+  // const Workouts = await Workout.find({ user_id: id }).exec();
+  // if (!Workouts) {
+  //   return res.status(500).json({ message: 'err while workouts fetchAll' });
+  // } else {
+  //   return res.status(200).send({ Workouts }).end();
+  // }
 };
 
 const addWorkout = async (req, res) => {
@@ -145,45 +142,54 @@ const addWorkout = async (req, res) => {
     return res.status(400).json({ message: 'bad add Workout request' }).end();
   }
 
-  const foundUser = await User.findById(userId);
+  const foundUser = await User.findById(userId).exec();
   if (!foundUser)
     return res.status(500).json({ message: 'request userId dont exist id DB' });
 
-  const { title, exercises } = workout;
+  const { title, note, exercises } = workout;
   const { firstname, lastname } = foundUser.name;
 
-  //handle exercises. for each exercise, check if need to insert to exercises db. else use existed exercise.
-  const newExercises = [];
-  for (const exercise of exercises) {
-    const dbExercise = await InsertExercieseToDB(exercise);
-    console.log(dbExercise);
-    let newExercise = {};
-    newExercise.exercise_id = dbExercise._id;
-    newExercise.title = dbExercise.title;
-    newExercise.type = dbExercise.type;
-    if (exercise?.sets) newExercise.sets = exercise.sets;
-    if (exercise?.reps) newExercise.reps = exercise.reps;
-    if (exercise?.duration) newExercise.duration = exercise.duration;
-    if (exercise?.distance) newExercise.distance = exercise.distance;
-    newExercises.push(newExercise);
-  }
+  try {
+    //handle exercises. for each exercise, check if need to insert to exercises db. else use existed exercise.
+    const newExercises = [];
+    for (const exercise of exercises) {
+      const dbExercise = await InsertExercieseToDB(exercise);
+      let newExercise = {};
+      newExercise.exercise_id = dbExercise._id;
+      newExercise.title = dbExercise.title;
+      newExercise.type = dbExercise.type;
+      if (exercise?.sets) newExercise.sets = exercise.sets;
+      if (exercise?.reps) newExercise.reps = exercise.reps;
+      if (exercise?.rest) newExercise.rest = exercise.rest;
+      if (exercise?.tempo) newExercise.tempo = exercise.tempo;
+      if (exercise?.rpe) newExercise.rpe = exercise.rpe;
+      if (exercise?.note) newExercise.note = exercise.note;
+      newExercises.push(newExercise);
+    }
 
-  const newWorkout = await Workout.create({
-    user_id: new ObjectId(userId),
-    author: { firstname, lastname },
-    title: title,
-    lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
-    exercises: newExercises,
-  });
+    const newWorkout = await Workout.create({
+      user_id: new ObjectId(userId),
+      author: { firstname, lastname },
+      title: title,
+      note: note,
+      lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
+      exercises: newExercises,
+    });
+
+    return res.status(201).send({ message: 'Added new workout' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'error in adding workout' });
+  }
 
   // for re-rendering, return updated Workouts for the user.
-  const id = foundUser._id;
-  const Workouts = await Workout.find({ user_id: id }).exec();
-  if (!Workouts) {
-    return res.status(500).json({ message: 'fetching user workouts failed' });
-  } else {
-    return res.status(200).send({ Workouts }).end();
-  }
+  // const id = foundUser._id;
+  // const Workouts = await Workout.find({ user_id: id }).exec();
+  // if (!Workouts) {
+  //   return res.status(500).json({ message: 'fetching user workouts failed' });
+  // } else {
+  //   return res.status(200).send({ Workouts }).end();
+  // }
 };
 
 const updateById = async (req, res) => {
@@ -215,42 +221,50 @@ const updateById = async (req, res) => {
       .status(500)
       .json({ message: `request userId don't exist in DB` });
 
-  const { title, exercises } = workout;
+  const { title, note, exercises } = workout;
 
-  //handle exercises. for each exercise, check if need to insert to exercises db. else use existed exercise.
-  const newExercises = [];
-  for (const exercise of exercises) {
-    const dbExercise = await InsertExercieseToDB(exercise);
-    console.log(dbExercise);
-    let newExercise = {};
-    newExercise.exercise_id = dbExercise._id;
-    newExercise.title = dbExercise.title;
-    newExercise.type = dbExercise.type;
-    if (exercise?.sets) newExercise.sets = exercise.sets;
-    if (exercise?.reps) newExercise.reps = exercise.reps;
-    if (exercise?.duration) newExercise.duration = exercise.duration;
-    if (exercise?.distance) newExercise.distance = exercise.distance;
-    newExercises.push(newExercise);
-  }
-  // update workout in DB.
-  const result = await Workout.updateOne(
-    { _id: workoutId },
-    {
-      title: title,
-      exercises: newExercises,
-      lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
+  try {
+    //handle exercises. for each exercise, check if need to insert to exercises db. else use existed exercise.
+    const newExercises = [];
+    for (const exercise of exercises) {
+      const dbExercise = await InsertExercieseToDB(exercise);
+      let newExercise = {};
+      newExercise.exercise_id = dbExercise._id;
+      newExercise.title = dbExercise.title;
+      newExercise.type = dbExercise.type;
+      if (exercise?.sets) newExercise.sets = exercise.sets;
+      if (exercise?.reps) newExercise.reps = exercise.reps;
+      if (exercise?.rest) newExercise.rest = exercise.rest;
+      if (exercise?.tempo) newExercise.tempo = exercise.tempo;
+      if (exercise?.rpe) newExercise.rpe = exercise.rpe;
+      if (exercise?.note) newExercise.note = exercise.note;
+      newExercises.push(newExercise);
     }
-  ).exec();
-  console.log(result);
+    // update workout in DB.
+    const result = await Workout.updateOne(
+      { _id: workoutId },
+      {
+        title: title,
+        exercises: newExercises,
+        note: note,
+        lastUpdated: format(new Date(), 'dd/MM/YYY pp'),
+      }
+    ).exec();
+
+    return res.status(200).send({ message: 'Updated workout successful' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({ message: 'error in update workout' });
+  }
 
   // for re-rendering, return updated Workouts for the user.
-  const id = foundUser._id;
-  const Workouts = await Workout.find({ user_id: id }).exec();
-  if (!Workouts) {
-    return res.status(500).json({ message: 'err while workouts fetchAll' });
-  } else {
-    return res.status(200).send({ Workouts }).end();
-  }
+  // const id = foundUser._id;
+  // const Workouts = await Workout.find({ user_id: id }).exec();
+  // if (!Workouts) {
+  //   return res.status(500).json({ message: 'err while workouts fetchAll' });
+  // } else {
+  //   return res.status(200).send({ Workouts }).end();
+  // }
 };
 
 const addSavedWorkout = async (req, res) => {
@@ -277,7 +291,6 @@ const addSavedWorkout = async (req, res) => {
     _id: { $in: foundUser.saved_workouts },
   }).exec();
 
-  console.log(savedWorkouts);
   if (!savedWorkouts) {
     return res.status(500).json({ message: 'err while savedWorkouts' });
   } else {
@@ -309,7 +322,6 @@ const deleteSavedWorkout = async (req, res) => {
     _id: { $in: foundUser.saved_workouts },
   }).exec();
 
-  console.log(savedWorkouts);
   if (!savedWorkouts) {
     return res.status(500).json({ message: 'err while savedWorkouts' });
   } else {

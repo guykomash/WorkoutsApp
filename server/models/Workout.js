@@ -17,10 +17,13 @@ const workoutSchema = new Schema({
       type: { type: String, required: true },
       sets: String,
       reps: String,
-      duration: String,
-      distance: String,
+      rest: String,
+      tempo: String,
+      rpe: String,
+      note: String,
     },
   ],
+  note: String,
 });
 
 module.exports = mongoose.model('Workout', workoutSchema);

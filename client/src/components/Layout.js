@@ -11,7 +11,6 @@ const Layout = () => {
   try {
     roles = jwtDecode(auth?.accessToken)?.UserInfo?.roles;
   } catch (err) {
-    // console.log(err);
     roles = [];
   }
 

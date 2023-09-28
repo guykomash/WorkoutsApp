@@ -53,7 +53,6 @@ function Nav() {
       { name: 'Home', path: '/' },
       { name: 'Sessions', path: '/sessions' },
       { name: 'Workouts', path: '/workouts' },
-      { name: 'Timer', path: '/timer' },
       { name: 'Explore Workouts', path: '/explore' },
     ];
 

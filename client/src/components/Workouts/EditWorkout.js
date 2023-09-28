@@ -70,6 +70,12 @@ const EditWorkout = () => {
     });
   };
 
+  const handleWorkoutsNoteChange = (note) => {
+    setWorkout((prev) => {
+      return { ...prev, note: note };
+    });
+  };
+
   const handleExerciseDelete = (id) => {
     if (workout.exercises.length > 1) {
       const nextExercises = workout.exercises.filter((e) => e.id !== id);
@@ -118,36 +124,6 @@ const EditWorkout = () => {
       }
     }
   };
-  // const handleExerciseTitleChange = (title, id) => {
-  //   setWorkout((prev) => {
-  //     return {
-  //       ...prev,
-  //       exercises: prev.exercises.map((e) =>
-  //         e._id === id ? { ...e, title: title } : e
-  //       ),
-  //     };
-  //   });
-  // };
-
-  // const handleExerciseTypeChange = (type, id) => {
-  //   setWorkout((prev) => {
-  //     return {
-  //       ...prev,
-  //       exercises: prev.exercises.map((e) =>
-  //         e._id === id
-  //           ? {
-  //               ...e,
-  //               type: type,
-  //               sets: e.reps || '',
-  //               reps: e.reps || '',
-  //               duration: e.duration || '',
-  //               distance: e.distance || '',
-  //             }
-  //           : e
-  //       ),
-  //     };
-  //   });
-  // };
 
   const handleExerciseSetsChange = (sets, id) => {
     setWorkout((prev) => {
@@ -171,23 +147,45 @@ const EditWorkout = () => {
     });
   };
 
-  const handleExerciseDurationChange = (duration, id) => {
+  const handleExerciseRestChange = (rest, id) => {
     setWorkout((prev) => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e.id === id ? { ...e, duration: duration } : e
+          e.id === id ? { ...e, rest: rest } : e
         ),
       };
     });
   };
 
-  const handleExerciseDistanceChange = (distance, id) => {
+  const handleExerciseTempoChange = (tempo, id) => {
     setWorkout((prev) => {
       return {
         ...prev,
         exercises: prev.exercises.map((e) =>
-          e.id === id ? { ...e, distance: distance } : e
+          e.id === id ? { ...e, tempo: tempo } : e
+        ),
+      };
+    });
+  };
+
+  const handleExerciseRPEChange = (rpe, id) => {
+    setWorkout((prev) => {
+      return {
+        ...prev,
+        exercises: prev.exercises.map((e) =>
+          e.id === id ? { ...e, rpe: rpe } : e
+        ),
+      };
+    });
+  };
+
+  const handleExerciseNoteChange = (note, id) => {
+    setWorkout((prev) => {
+      return {
+        ...prev,
+        exercises: prev.exercises.map((e) =>
+          e.id === id ? { ...e, note: note } : e
         ),
       };
     });
@@ -228,15 +226,17 @@ const EditWorkout = () => {
       if (exercise.exercise_id) newExercise.exercise_id = exercise.exercise_id;
       if (exercise?.sets) newExercise.sets = exercise.sets;
       if (exercise?.reps) newExercise.reps = exercise.reps;
-      if (exercise?.duration) newExercise.duration = exercise.duration;
-      if (exercise?.distance) newExercise.distance = exercise.distance;
-
+      if (exercise?.rest) newExercise.rest = exercise.rest;
+      if (exercise?.tempo) newExercise.tempo = exercise.tempo;
+      if (exercise?.rpe) newExercise.rpe = exercise.rpe;
+      if (exercise?.note) newExercise.note = exercise.note;
       return newExercise;
     });
 
     const formattedWorkout = {
       user_id: workout.user_id,
       title: workout.title,
+      note: workout.note,
       exercises: formattedExercises,
     };
     // console.log(formattedWorkout);
@@ -245,7 +245,7 @@ const EditWorkout = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <br />
       <Button color="primary" onClick={() => onWorkoutsBtn()}>
         <KeyboardBackspaceIcon />
@@ -253,7 +253,14 @@ const EditWorkout = () => {
       </Button>
       <br />
 
-      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Container
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Typography
           fullWidth
           variant="h4"
@@ -284,6 +291,20 @@ const EditWorkout = () => {
             margin="normal"
             InputLabelProps={{ shrink: true }}
             onChange={(e) => handleTitleChange(e.target.value)}
+          />
+          <br />
+          <Typography variant="h6" sx={{ fontWeight: '700', color: '#3f50b5' }}>
+            Note
+          </Typography>
+          <TextField
+            variant="filled"
+            fullWidth
+            label="Workout Note"
+            margin="normal"
+            multiline
+            rows={3}
+            value={workout.note}
+            onChange={(e) => handleWorkoutsNoteChange(e.target.value)}
           />
           <br />
           <br />
@@ -336,17 +357,6 @@ const EditWorkout = () => {
                     <DeleteIcon></DeleteIcon>
                   </Button>
                 </Container>
-                {/* <TextField
-                  id={exercise._id}
-                  label="Title"
-                  value={exercise.title}
-                  variant="filled"
-                  fullWidth
-                  margin="normal"
-                  onChange={(e) =>
-                    handleExerciseTitleChange(e.target.value, exercise._id)
-                  }
-                /> */}
                 <br />
                 <br />
                 <ExerciseCreateOptionDialog
@@ -354,6 +364,21 @@ const EditWorkout = () => {
                   setExerciseValue={handleExerciseChange}
                 />
                 <br />
+                <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <TextField
+                    label="Exercise Note"
+                    margin="normal"
+                    variant="filled"
+                    fullWidth
+                    multiline
+                    rows={3}
+                    value={exercise.note}
+                    onChange={(e) =>
+                      handleExerciseNoteChange(e.target.value, exercise.id)
+                    }
+                  />
+                </Container>
+
                 <Container
                   sx={{
                     display: 'grid',
@@ -364,6 +389,7 @@ const EditWorkout = () => {
                 >
                   <TextField
                     label="Sets"
+                    variant="filled"
                     value={exercise.sets}
                     margin="normal"
                     onChange={(e) =>
@@ -372,6 +398,7 @@ const EditWorkout = () => {
                   />
                   <TextField
                     label="Reps"
+                    variant="filled"
                     margin="normal"
                     value={exercise.reps}
                     onChange={(e) =>
@@ -380,23 +407,32 @@ const EditWorkout = () => {
                   />
 
                   <TextField
-                    label="Duration"
-                    value={exercise.duration}
+                    label="Rest"
+                    variant="filled"
+                    value={exercise.rest}
                     margin="normal"
                     onChange={(e) =>
-                      handleExerciseDurationChange(e.target.value, exercise.id)
+                      handleExerciseRestChange(e.target.value, exercise.id)
                     }
                   />
                   <TextField
-                    label="Distance"
+                    label="Tempo"
+                    variant="filled"
                     margin="normal"
-                    defaultValue={''}
-                    value={exercise.distance}
+                    value={exercise.tempo}
                     onChange={(e) =>
-                      handleExerciseDistanceChange(e.target.value, exercise.id)
+                      handleExerciseTempoChange(e.target.value, exercise.id)
                     }
                   />
-
+                  <TextField
+                    label="RPE"
+                    variant="filled"
+                    margin="normal"
+                    value={exercise.rpe}
+                    onChange={(e) =>
+                      handleExerciseRPEChange(e.target.value, exercise.id)
+                    }
+                  />
                   <br />
                 </Container>
               </Paper>

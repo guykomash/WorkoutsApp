@@ -63,7 +63,7 @@ const test = async (req, res) => {
     return res.status(400).json({ message: 'bad add Workout request' }).end();
   }
 
-  const foundUser = await User.findById(userId);
+  const foundUser = await User.findById(userId).exec();
   if (!foundUser)
     return res.status(500).json({ message: 'request userId dont exist id DB' });
 

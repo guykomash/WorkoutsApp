@@ -11,6 +11,7 @@ const useLogout = () => {
       });
       console.log(response.data);
       setAuth({});
+      localStorage.clear();
     } catch (err) {
       console.error(err);
       setAuth({});

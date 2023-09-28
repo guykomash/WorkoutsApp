@@ -95,23 +95,24 @@ export const WorkoutsProvider = ({ children }) => {
       const response = await axiosPrivate.put(`/workouts/${workoutId}`, {
         workout: workout,
       });
-      setUserWorkouts(response.data.Workouts);
-      await fetchAllExercises(); // user maybe added new exercises.
+      // setUserWorkouts(response.data.Workouts);
+      // await fetchAllExercises(); // user maybe added new exercises.
     } catch (err) {
       console.error(err);
     }
   };
 
-  const addWorkout = async (title, exercises) => {
+  const addWorkout = async (title, note, exercises) => {
     try {
       const response = await axiosPrivate.post(`/workouts/add-workout`, {
         workout: {
           title: title,
           exercises: exercises,
+          note: note,
         },
       });
-      setUserWorkouts(response.data.Workouts);
-      await fetchAllExercises(); // user maybe added new exercises.
+      // setUserWorkouts(response.data.Workouts);
+      // await fetchAllExercises(); // user maybe added new exercises.
     } catch (err) {
       console.error(err);
     }
@@ -120,7 +121,7 @@ export const WorkoutsProvider = ({ children }) => {
   const deleteWorkout = async (workoutId) => {
     try {
       const response = await axiosPrivate.delete(`/workouts/${workoutId}`);
-      setUserWorkouts(response.data.Workouts);
+      // setUserWorkouts(response.data.Workouts);
     } catch (err) {
       console.error(err);
     }
@@ -131,6 +132,7 @@ export const WorkoutsProvider = ({ children }) => {
     if (savedWorkouts)
       return savedWorkouts.find((workout) => workout._id === workoutId);
   };
+  
   const addSavedWorkout = async (workoutId) => {
     try {
       const response = await axiosPrivate.post(`/workouts/save-workout`, {

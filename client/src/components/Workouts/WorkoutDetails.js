@@ -13,6 +13,7 @@ import {
   TableRow,
   TableBody,
   TableCell,
+  TextField,
 } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
@@ -46,15 +47,19 @@ const WorkoutDetails = () => {
               <TableCell>Exercise</TableCell>
               <TableCell align="right">Sets</TableCell>
               <TableCell align="right">Reps</TableCell>
-              <TableCell align="right">Distance</TableCell>
-              <TableCell align="right">Duration</TableCell>
+              <TableCell align="right">Rest</TableCell>
+              <TableCell align="right">Tempo</TableCell>
+              <TableCell align="right">RPE</TableCell>
+              <TableCell align="center">Note</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {exercises.map((exercise, index) => (
               <TableRow
                 key={`exercise-${exercise._id}-row`}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{
+                  '&:last-child td, &:last-child th': { border: 0 },
+                }}
               >
                 <TableCell key={`exercise-${exercise._id}-index`}>
                   {index + 1}
@@ -68,17 +73,17 @@ const WorkoutDetails = () => {
                 <TableCell key={`exercise-${exercise._id}-reps`} align="right">
                   {exercise.reps}
                 </TableCell>
-                <TableCell
-                  key={`exercise-${exercise._id}-distance`}
-                  align="right"
-                >
-                  {exercise.distance}
+                <TableCell key={`exercise-${exercise._id}-rest`} align="right">
+                  {exercise.rest}
                 </TableCell>
-                <TableCell
-                  key={`exercise-${exercise._id}-duration`}
-                  align="right"
-                >
-                  {exercise.duration}
+                <TableCell key={`exercise-${exercise._id}-tempo`} align="right">
+                  {exercise.tempo}
+                </TableCell>
+                <TableCell key={`exercise-${exercise._id}-rpe`} align="right">
+                  {exercise.rpe}
+                </TableCell>
+                <TableCell key={`exercise-${exercise._id}-note`}>
+                  {exercise.note}
                 </TableCell>
               </TableRow>
             ))}
@@ -89,7 +94,7 @@ const WorkoutDetails = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <br />
       <Button color="primary" onClick={onWorkoutsBtn}>
         <KeyboardBackspaceIcon />
@@ -112,8 +117,8 @@ const WorkoutDetails = () => {
         >
           Workout Details
         </Typography>
-        <br />
       </Container>
+      <br />
       {!workoutDetails ? (
         <Typography variant="body1" align="center">
           Loading workout details...
@@ -124,29 +129,19 @@ const WorkoutDetails = () => {
         </Typography>
       ) : (
         <Paper elevation={4} sx={{ p: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid>
+            <Grid>
               <Typography
                 variant="h5"
-                sx={{ fontWeight: '800' }}
+                sx={{ fontWeight: '800', color: '#097969' }}
                 align="center"
               >
-                {workoutDetails.title}
+                <u> {workoutDetails.title}</u>
               </Typography>
             </Grid>
-            <Grid item xs={12} align="center">
+            <Grid align="center">
               <Typography
-                display={'inline'}
-                // variant="body1"
-                sx={{ fontWeight: '700', fontSize: 16 }}
-              >
-                Created by
-              </Typography>
-              <Typography
-                display={'inline'}
                 margin={1}
-                padding={0.5}
-                variant="body1"
                 sx={{
                   // fontStyle: 'italic',
                   color: '#097969',
@@ -157,6 +152,24 @@ const WorkoutDetails = () => {
                 {`${workoutDetails?.author?.firstname} ${workoutDetails?.author?.lastname}`}
               </Typography>
             </Grid>
+            {workoutDetails.note ? (
+              <Typography
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}
+                border={1}
+                borderColor={'#097969'}
+                borderRadius={'6px'}
+                padding={2}
+                margin={1}
+              >
+                {workoutDetails.note}
+              </Typography>
+            ) : (
+              <></>
+            )}
           </Grid>
           <Grid item xs={12}>
             <Typography variant="h6"></Typography>

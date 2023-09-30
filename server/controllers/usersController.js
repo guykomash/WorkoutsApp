@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const ROLES_LIST = require('../config/roles_list');
+const Workout = require('../models/Workout');
+const Session = require('../models/Session');
 
 const getAccountDataByUser = async (req, res) => {
   console.log('getAccountDataByUser');
@@ -80,6 +82,14 @@ const deleteUserById = async (req, res) => {
     const foundUser = await User.findByIdAndDelete(deleteUserId).exec();
     if (!foundUser)
       return res.status(400).send({ message: 'User was not found - Bad ID' });
+
+    //delete the user workouts & sessions.
+    const deleteWorkouts = await Workout.deleteMany({
+      user_id: deleteUserId,
+    }).exec();
+    const deleteSessions = await Session.deleteMany({
+      user_id: deleteUserId,
+    }).exec();
   } catch (err) {
     console.log(err);
   }

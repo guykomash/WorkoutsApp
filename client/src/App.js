@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import { Route, Routes } from 'react-router-dom';
 
 import Home from './components/Home';
@@ -90,6 +91,38 @@ const App = () => {
         <Route path="/*" element={<PageNotFound />} />
       </Route>
     </Routes>
+=======
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Footer from './Footer';
+import Nav from './Nav';
+import Home from './Home';
+import Workouts from './Workouts';
+import AddWorkout from './AddWorkout';
+import PageNotFound from './PageNotFound';
+import Timer from './Timer';
+import WorkoutDetails from './WorkoutDetails';
+import NewSession from './NewSession';
+
+const App = () => {
+  return (
+    <div className="App">
+      <Nav />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/workouts" element={<Workouts />} />
+          <Route path="/workouts/:workoutId" element={<WorkoutDetails />} />
+          <Route path="/workouts/add-workout" element={<AddWorkout />} />
+          <Route path="/sessions/new-session" element={<NewSession />} />
+
+          <Route path="/timer" element={<Timer />} />
+          <Route path="/*" element={<PageNotFound />} />
+        </Routes>
+      </Router>
+
+      <Footer />
+    </div>
+>>>>>>> parent of ad4fe9c (added MongoDB - add , delete & update workouts)
   );
 };
 

@@ -59,9 +59,9 @@ const Home = () => {
           Create and edit your own workouts.
           <br />
           <br />
-          Explore workouts created by others, and saved them.
+          Explore workouts created by others, and save them.
           <br />
-          <br /> Workouts can be used as a template for your sessions, where
+          <br /> Workouts can be used as a templates for your sessions, where
           you'll be able to keep track of your progression in each exercise.
           <br />
           <br />

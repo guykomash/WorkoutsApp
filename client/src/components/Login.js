@@ -20,9 +20,6 @@ import axios from '../api/axios';
 export const LoginUser = async () => Paper;
 
 const Login = () => {
-  useEffect(() => {
-    console.log('render..');
-  }, []);
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
@@ -36,6 +33,31 @@ const Login = () => {
   useEffect(() => {
     setErrMsg('');
   }, [user, pwd]);
+
+  useEffect(() => {
+    const keyDownHandler = (e) => {
+      console.log(`pressed :${e.key}`);
+
+      if (e.key === 'Enter') {
+        console.log('Enter!');
+        e.preventDefault();
+
+        if (user && pwd) {
+          console.log('send?');
+          handleLoginBtn();
+        } else {
+          console.log(user, pwd);
+          console.log('no?');
+        }
+      } else console.log(e.key);
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+    };
+  });
 
   const handleLoginBtn = async () => {
     try {
@@ -178,10 +200,12 @@ const Login = () => {
             }}
           >
             <TextField
-              sx={{ width: '80%' }}
+              sx={{ width: '80%', autoComplete: 'off' }}
               disabled={isLoadingRequest}
               label="User Name"
               margin="normal"
+              type="text"
+              autoComplete="false"
               value={user}
               required
               onChange={(e) => setUser(e.target.value)}
@@ -219,7 +243,7 @@ const Login = () => {
           <br />
           <Button
             variant="contained"
-            disabled={!user}
+            disabled={!user || !pwd}
             style={{ height: '50px', minWidth: '100%' }}
             onClick={handleLoginBtn}
           >

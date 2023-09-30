@@ -20,6 +20,7 @@
     "@mui/x-date-pickers": "^6.15.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+<<<<<<< HEAD
     "cookie-parser": "^1.4.6",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
@@ -27,6 +28,8 @@
     "jwt-decode": "^3.1.2",
     "mongodb": "^6.0.0",
     "mongoose": "^7.5.0",
+=======
+>>>>>>> parent of ad4fe9c (added MongoDB - add , delete & update workouts)
     "uuid": "^9.0.0"
   }
 }
